@@ -1,5 +1,6 @@
 #include "grammar.h"
 #include "mystring.h"
+#include "output.h"
 
 #include <ctype.h>
 #include <setjmp.h>
@@ -10,7 +11,10 @@ void parse(string buf) {
 	bool advancef(string s) {
 		size_t left = buf.len - pos;
 		if(left < s.len) return false;
-		if(0 == memcmp(s.base, buf.base + pos, s.len)) return true;
+		if(0 == memcmp(s.base, buf.base + pos, s.len)) {
+			pos += s.len;
+			return true;
+		}
 		return false;
 	}
 #define advance(lit) advancef(LITSTR(lit))
@@ -35,7 +39,7 @@ void parse(string buf) {
 		}
 	}
 
-	auto void for_statement(void);
+	auto bool for_types(void);
 	
 	int err = setjmp(onerr);
 	if(err == 0) {
@@ -44,9 +48,9 @@ void parse(string buf) {
 				output_return_type();
 			} else if(advance("CLOSURE")) {
 				output_closure_name();
-			} else if(for_statement()) {
+			} else if(for_types()) {
 			} else {
-				fputc(buf.base[pos], ' ');
+				fputc(buf.base[pos], stdout);
 				++pos;
 			}
 		}
@@ -56,10 +60,10 @@ void parse(string buf) {
 		fprintf(stderr, "Uhh %d\n", err);
 		abort();
 	}
-	bool for_statement(void) {
+	bool for_types(void) {
 		eat_space();
 		if(pos == buf.len) return false;
-		if(!advance("FOR_STATEMENT")) return false;
+		if(!advance("FOR_TYPES")) return false;
 		eat_space();
 		bool do_init = false;
 		if(advance("INIT")) {
@@ -72,35 +76,35 @@ void parse(string buf) {
 			eat_space();
 			do_type = true;
 			if(pos == buf.len) {
-				output_for_statement(do_init, do_type, false, LITSTR(""));
+				output_for_types(do_init, do_type, false, LITSTR(""));
 				longjmp(onerr, 2);
 			}
 		}
 		if(advance("name")) {
 			eat_space();
 			if(pos == buf.len) {
-				output_for_statement(do_init, do_type, true, LITSTR(""));
+				output_for_types(do_init, do_type, true, LITSTR(""));
 				longjmp(onerr, 3);
 			}
 		}
 		string delim = {
 			buf.base + pos,
-			1;
+			1
 		};
 		while(!isspace(buf.base[++pos])) {
 			++delim.len;
 			if(pos == buf.len) {
-				output_for_statement(do_init, do_type, do_name, delim);
+				output_for_types(do_init, do_type, do_name, delim);
 				longjmp(onerr, 1);
 			}
 		}
-		while(!advance("END_FOR_STATEMENT")) {
+		while(!advance("END_FOR_TYPES")) {
 			if(++pos == buf.len) {
 				longjmp(onerr, 3);
 			}
 		}
 			
-		output_for_statement(do_init, do_type, do_name, delim);
+		output_for_types(do_init, do_type, do_name, delim);
 		return true;
 	}
 }
