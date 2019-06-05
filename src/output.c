@@ -21,6 +21,7 @@ size_t nvars = sizeof(vars) / sizeof(*vars);
 size_t ninit_vars = sizeof(init_vars) / sizeof(*init_vars);
 
 void output_for_types(bool for_init, bool type, bool name, string delim) {
+	// what about self->name = name ? reparsing? unfolding?
 	size_t i;
 	size_t n = for_init ? ninit_vars : nvars;
 	for(i=0;i<n;++i) {
@@ -31,6 +32,7 @@ void output_for_types(bool for_init, bool type, bool name, string delim) {
 			v = &vars[i];
 		}
 		if(type) {
+			fputc('\n', stdout);
 			fwrite(v->type.base, v->type.len, 1, stdout);
 			if(name) {
 				fputc(' ', stdout);
@@ -38,6 +40,7 @@ void output_for_types(bool for_init, bool type, bool name, string delim) {
 		}
 		if(name) {
 			fwrite(v->name.base, v->name.len, 1, stdout);
+			fputc('\n', stdout);
 		}
 		if(i != 0) {
 			fwrite(delim.base, delim.len, 1, stdout);
@@ -53,8 +56,14 @@ void output_space(string s) {
 	fwrite(s.base, s.len, 1, stdout);
 }
 void output_return_type() {
-	fwrite(LITLEN("derpreturntype"), 1, stdout);
+	fwrite(LITLEN("herpderp"), 1, stdout);
+	fputc('\n', stdout);
 }
 void output_closure_name() {
 	fwrite(LITLEN("uv_mainderp_thing"), 1, stdout);
+	fputc('\n', stdout);
+}
+
+void output_string(string s) {
+	fwrite(s.base, s.len, 1, stdout);
 }

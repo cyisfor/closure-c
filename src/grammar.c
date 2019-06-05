@@ -12,6 +12,7 @@ void parse(string buf) {
 		size_t left = buf.len - pos;
 		if(left < s.len) return false;
 		if(0 == memcmp(s.base, buf.base + pos, s.len)) {
+			output_string(s);
 			pos += s.len;
 			return true;
 		}
@@ -67,14 +68,14 @@ void parse(string buf) {
 	int err = setjmp(onerr);
 	if(err == 0) {
 		while(pos < buf.len) {
+			eat_space();
 			if(advance("RETURNS")) {
 				output_return_type();
 			} else if(advance("CLOSURE")) {
 				output_closure_name();
 			} else if(for_types()) {
 			} else {
-				fputc(buf.base[pos], stdout);
-				++pos;
+				onechar();
 			}
 		}
 	} else if(err == 1) {
@@ -123,6 +124,7 @@ void parse(string buf) {
 			}
 		}
 		while(!advance("END_FOR_TYPES")) {
+			++delim.len;
 			if(++pos == buf.len) {
 				longjmp(onerr, 3);
 			}
