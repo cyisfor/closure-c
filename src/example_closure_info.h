@@ -1,15 +1,16 @@
 #include "mytring.h"
-#define INITSTR(a) { .base = a, .len = sizeof(a)-1 }
+#define I(a) { .base = #a, .len = sizeof(#a)-1 }
 
-struct var vars[] = {
-	{INITSTR("int"), INITSTR("foo")},
-	{INITSTR("double"),INITSTR("bar") }
+const struct var vars[] = {
+	{I(int), I(foo)},
+	{I(double),I(bar)}
 };
 
-struct var init_vars[] = {
-	{INITSTR("struct thing"), INITSTR("oof")},
-	{INITSTR("void*"),INITSTR("arglebargle") }
+const struct var init_vars[] = {
+	{I(struct thing), I(oof)},
+	{I(void*),I(arglebargle)}
 };
 
-string closure_name = INITSTR("example_derp");
-string return_type = INITSTR("void");
+const string closure_name = I(example_derp);
+const string return_type = I(void);
+#undef I
