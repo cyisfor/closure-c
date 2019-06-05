@@ -1,4 +1,8 @@
-#include "mystring.h"
+#include "grammar.h"
+
+#include <ctype.h>
+#include <setjmp.h>
+
 
 void parse(string buf) {
 	size_t pos = 0;
@@ -8,6 +12,8 @@ void parse(string buf) {
 		if(0 == memcmp(s.base, buf.base + pos, s.len)) return true;
 		return false;
 	}
+
+	jmp_buf onerr;
 	
 	void eat_space(void) {
 		while(isspace(buf.base[pos])) {
