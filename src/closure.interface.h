@@ -2,7 +2,7 @@ typedef RETURNS (*CLOSURE_call)(
 	void* arg,
 	FOR_TYPES INIT
 	type name,
-	END_FOR_TYPES,
+	END_FOR_TYPES
 	FOR_TYPES
 	type name,
 	END_FOR_TYPES);

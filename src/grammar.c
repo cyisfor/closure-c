@@ -39,6 +39,7 @@ void parse(string buf) {
 		if(pos == buf.len) return false;
 		if(!advance("FOR_TYPES")) return false;
 		canexit = -1;
+		output = false;
 		eat_space();
 		bool do_init = false;
 		size_t start = pos;
@@ -69,6 +70,7 @@ void parse(string buf) {
 				i == 0 ? &delim : NULL,
 				types[i]);
 		}
+		output = true;
 		canexit = 1;
 		return true;
 	}
@@ -77,15 +79,24 @@ void parse(string buf) {
 static
 void parse_for_types_expression(string buf, string* delim, const struct var v) {
 #include "parser-snippet.h"
+	output = false;
 	int err = setjmp(onerr);
 	size_t last_thing = 0;
+	void commit(int except_for) {
+		if(pos - except_for > last_thing) {
+			output_string(strandlen(
+							  buf.base + last_thing,
+							  pos - except_for - last_thing));
+			last_thing = pos;
+		}
+	}
 	if(err == 0) {
 		while(pos < buf.len) {
 			if(advance("type")) {
-				last_thing = pos;
+				commit(4);
 				output_string(v.type);
 			} else if(advance("name")) {
-				last_thing = pos;
+				commit(4);
 				output_string(v.name);
 			} else {
 				onechar();
@@ -97,10 +108,11 @@ void parse_for_types_expression(string buf, string* delim, const struct var v) {
 		fprintf(stderr, "expression %d\n", err);
 		abort();
 	}
+	// don't commit the last last thing, save for delim
 	if(delim) {
 		delim->base = buf.base + last_thing;
 		delim->len = buf.len - last_thing;
-	} 	
+	}
 }
 				
 	
