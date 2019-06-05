@@ -12,3 +12,6 @@ extern string return_type;
 
 void script_info_load(int fd);
 #define SCRIPT_INFO // XXX some weird cpp thing eh...
+
+extern size_t nvars;
+extern size_t ninit_vars;

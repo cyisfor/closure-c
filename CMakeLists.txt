@@ -49,3 +49,5 @@ if("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
 endif()
 
 parse_for(script)
+target_sources(parse_script
+  src/script_info.c)

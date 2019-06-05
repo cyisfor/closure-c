@@ -3,6 +3,15 @@
 #include <unistd.h> // read
 #include <stdlib.h> // realloc
 
+struct var* init_vars = NULL;
+struct var* vars = NULL;
+
+string closure_name = {};
+string return_type = {};
+
+size_t nvars = 0;
+size_t ninit_vars = 0;
+
 void load_script_info(int fd) {
 	size_t size = 0;
 	char* script = mmapfd(fd, &size);
