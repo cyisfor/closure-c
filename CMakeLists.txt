@@ -2,8 +2,9 @@ cmake_minimum_required(VERSION 3.14)
 
 add_subdirectory(data_to_header)
 
-data_to_header(INTERFACE
-  HEADER serialized_interface.h
+data_to_header(TEMPLATE
+  TARGET TEMPLATE
+  HEADER template.h
   SOURCE src/closure.interface.h)
 
 function (parse_for name)
@@ -13,13 +14,16 @@ function (parse_for name)
 	src/grammar.c
 	src/output.c
 	src/for_types.c)
+  add_dependencies(parse_${name} TEMPLATE)
   target_compile_definitions(parse_${name} PRIVATE
 	-DMY_INFO="${name}_info.h")
-  target_include_directories(parse_${name} PRIVATE cstuff/src)
+  target_include_directories(parse_${name} PRIVATE
+	"${CMAKE_CURRENT_BINARY_DIR}"
+	cstuff/src)
 endfunction(parse_for)
 
 function (closure_for name)
-  parse_for(name)
+  parse_for(${name})
   add_custom_command(
 	OUTPUT ${name}.h
 	COMMAND
