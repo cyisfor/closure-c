@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 3.14)
 
-function (closure_for name)
+add_subdirectory(data_to_header)
+
+data_to_header(INTERFACE
+  HEADER serialized_interface.h
+  SOURCE src/closure.interface.h)
+
+function (parse_for name)
   add_executable(parse_${name}
 	cstuff/src/mmapfile.c
 	src/main.c
@@ -10,18 +16,17 @@ function (closure_for name)
   target_compile_definitions(parse_${name} PRIVATE
 	-DMY_INFO="${name}_info.h")
   target_include_directories(parse_${name} PRIVATE cstuff/src)
-  get_filename_component(CLOSURE_INTERFACE
-	src/closure.interface.h
-	ABSOLUTE
-	BASE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+endfunction(parse_for)
+
+function (closure_for name)
+  parse_for(name)
   add_custom_command(
 	OUTPUT ${name}.h
 	COMMAND
-	parse_${name} <"${CLOSURE_INTERFACE}" > ${name}.h
-	MAIN_DEPENDENCY
-	src/closure.interface.h
+	parse_${name} > ${name}.h
 	DEPENDS
 	parse_${name})
+  
 endfunction(closure_for)
 
 if("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
@@ -38,3 +43,5 @@ if("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
   target_link_libraries(example PkgConfig::GLIB)
   closure_for(example_closure)
 endif()
+
+parse_for(script)
