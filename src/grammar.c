@@ -1,4 +1,5 @@
 #include "grammar.h"
+#include "mystring.h"
 
 #include <ctype.h>
 #include <setjmp.h>
@@ -12,23 +13,31 @@ void parse(string buf) {
 		if(0 == memcmp(s.base, buf.base + pos, s.len)) return true;
 		return false;
 	}
+#define advance(lit) advancef(LITSTR(lit))
 
 	jmp_buf onerr;
+	int done = -1;
 	
 	void eat_space(void) {
 		while(isspace(buf.base[pos])) {
-			if(++pos == buf.len) longjmp(&onerr, done);
+			if(++pos == buf.len) longjmp(onerr, done);
 		}
 		if(advance("/*")) {
-			eat_space();
-			if(pos
+			for(;;) {
+				eat_space();
+				if(advance("*/")) break;
+			}
+		}
+		if(advance("//")) {
+			while(buf.base[++pos] != '\n') {
+				if(pos == buf.len) longjmp(onerr, done);
+			}
+		}
 	}
 
 	auto void for_statement(void);
 	
-#define advance(lit) advancef(LITSTR(s));
-	int done = -1;
-	int err = setjmp(&onerr);
+	int err = setjmp(onerr);
 	if(err == 0) {
 		while(pos < buf.len) {
 			if(advance("RETURNS")) {
@@ -64,14 +73,14 @@ void parse(string buf) {
 			do_type = true;
 			if(pos == buf.len) {
 				output_for_statement(do_init, do_type, false, LITSTR(""));
-				longjmp(&onerr, 2);
+				longjmp(onerr, 2);
 			}
 		}
 		if(advance("name")) {
 			eat_space();
 			if(pos == buf.len) {
 				output_for_statement(do_init, do_type, true, LITSTR(""));
-				longjmp(&onerr, 3);
+				longjmp(onerr, 3);
 			}
 		}
 		string delim = {
@@ -82,12 +91,12 @@ void parse(string buf) {
 			++delim.len;
 			if(pos == buf.len) {
 				output_for_statement(do_init, do_type, do_name, delim);
-				longjmp(&onerr, 1);
+				longjmp(onerr, 1);
 			}
 		}
 		while(!advance("END_FOR_STATEMENT")) {
 			if(++pos == buf.len) {
-				longjmp(&onerr, 3);
+				longjmp(onerr, 3);
 			}
 		}
 			
