@@ -11,8 +11,8 @@ const struct var init_vars[] = {
 
 static
 const struct var vars[] = {
-	{I(int), I(foo)},
-	{I(double),I(bar)}
+	{I(char), I(foo)},
+	{I(string),I(bar)}
 };
 
 static

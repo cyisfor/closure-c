@@ -43,14 +43,14 @@ struct CLOSURE CLOSURE(
 
 static
 RETURNS call_CLOSURE(
-	const struct CLOSURE* self,
+	const struct CLOSURE self,
 	FOR_TYPES
 	type name,
 	END_FOR_TYPES) {
-	return self->call(
-		self->arg,
+	return self.call(
+		self.arg,
 		FOR_TYPES INIT
-		self->name,
+		self.name,
 		END_FOR_TYPES,
 		FOR_TYPES
 		name,

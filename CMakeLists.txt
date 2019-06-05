@@ -25,6 +25,8 @@ function (closure_for name)
 endfunction(closure_for)
 
 if("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
+  include(FindPkgConfig)
+  pkg_check_modules(GLIB REQUIRED IMPORTED_TARGET glib-2.0)
   add_executable(example
 	example_closure.h
 	src/example_main.c)
@@ -33,5 +35,6 @@ if("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
 	"${CMAKE_CURRENT_SOURCE_DIR}/src"
 	"${CMAKE_CURRENT_BINARY_DIR}"
 	cstuff/src)
+  target_link_libraries(example PkgConfig::GLIB)
   closure_for(example_closure)
 endif()
