@@ -4,6 +4,9 @@
 
 int main(int argc, char *argv[])
 {
+#ifdef SCRIPT_INFO
+	load_script_info(0);
+#endif
 	parse((string){TEMPLATE, TEMPLATE_SIZE});
     return 0;
 }

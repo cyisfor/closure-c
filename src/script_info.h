@@ -11,3 +11,4 @@ extern string closure_name;
 extern string return_type;
 
 void script_info_load(int fd);
+#define SCRIPT_INFO // XXX some weird cpp thing eh...
