@@ -8,7 +8,8 @@ const struct var init_vars[] = {
 	{I(void*),I(arglebargle)}
 };
 
-
+// note: init vars could be initialized first, set to null, set later, etc
+// but these vars have to be set at the time of the closure call:
 static
 const struct var vars[] = {
 	{I(char), I(foo)},
