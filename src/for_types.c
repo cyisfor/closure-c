@@ -1,16 +1,6 @@
 #include "for_types.h"
 
-#define INITSTR(a) { .base = a, .len = sizeof(a)-1 }
-
-struct var vars[] = {
-	{INITSTR("int"), INITSTR("foo")},
-	{INITSTR("double"),INITSTR("bar") }
-};
-
-struct var init_vars[] = {
-	{INITSTR("struct thing"), INITSTR("oof")},
-	{INITSTR("void*"),INITSTR("arglebargle") }
-};
+#include MY_INFO
 
 size_t nvars = sizeof(vars) / sizeof(*vars);
 size_t ninit_vars = sizeof(init_vars) / sizeof(*init_vars);
@@ -23,4 +13,11 @@ struct var* for_types(bool do_init, size_t* num) {
 		*num = nvars;
 		return vars;
 	}
+}
+
+void output_return_type() {
+	fwrite(LITLEN("herpderp"), 1, stdout);
+}
+void output_closure_name() {
+	fwrite(LITLEN("uv_mainderp_thing"), 1, stdout);
 }
