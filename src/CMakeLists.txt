@@ -1,8 +1,10 @@
-function (closure_for name for_types_c)
+function (closure_for name)
   add_executable(parse_${name}
 	src/grammar.c
 	src/output.c
-	${for_types_c})
+	src/for_types.c)
+  target_compile_definitions(parse_${name}
+	-DMY_INFO="${name}_info.h")
   add_custom_command(
 	OUTPUT ${name}.c
 	COMMAND
@@ -25,6 +27,6 @@ if("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
   add_executable(example,
 	example_closure.c
 	src/example.c)
-  closure_for(example_closure src/example_for_types.c)
+  closure_for(example_closure)
 endif()
   
