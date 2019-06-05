@@ -1,7 +1,13 @@
 #include "script_info.h"
-#include "mmapfd.h"
+#include "output.h"
+#include "mmapfile.h"
+
 #include <unistd.h> // read
 #include <stdlib.h> // realloc
+#include <setjmp.h> // 
+#include <assert.h> // 
+#include <ctype.h> // isspace
+
 
 struct var* init_vars = NULL;
 struct var* vars = NULL;
@@ -40,10 +46,12 @@ void load_script_info(int fd) {
 		}
 		string s = {
 			.base = buf.base + start,
-			.len = pos - start;
-		}
+			.len = pos - start
+		};
 		return s;
 	}
+
+	bool in_init = false;
 
 	bool advance_var(void) {
 		size_t start = pos;
@@ -84,7 +92,6 @@ void load_script_info(int fd) {
 	}
 	
 	output = false;
-	bool in_init = false;
 	int err = setjmp(onerr);
 	if(err == 0) {
 		size_t start = pos;
