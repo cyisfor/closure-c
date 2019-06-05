@@ -21,20 +21,39 @@ void parse(string buf) {
 
 	jmp_buf onerr;
 	int done = -1;
-	
-	void eat_space(void) {
-		while(isspace(buf.base[pos])) {
-			if(++pos == buf.len) longjmp(onerr, done);
-		}
-		if(advance("/*")) {
-			for(;;) {
-				eat_space();
-				if(advance("*/")) break;
+
+	void onechar(void) {
+		fputc(buf.base[pos],stdout);
+		if(++pos == buf.len) longjmp(&onerr, done);
+	}
+
+	void eat_comment(void) {
+		for(;;) {
+			eat_space();
+			if(advance("*/")) {
+				break;
+			} else {
+				onechar();
 			}
 		}
-		if(advance("//")) {
-			while(buf.base[++pos] != '\n') {
-				if(pos == buf.len) longjmp(onerr, done);
+	}
+
+	
+	void eat_space(void) {
+		for(;;) {
+			if(advance("/*")) {
+				eat_comment();
+			} else if(advance("//")) {
+				for(;;) {
+					onechar();
+					if(buf.base[pos] == '\n') {
+						break;
+					}
+				}
+			} else if(isspace(buf.base[pos])) {
+				onechar();
+			} else {
+				return;
 			}
 		}
 	}
