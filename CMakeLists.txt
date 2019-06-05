@@ -29,6 +29,8 @@ if("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
 	example_closure.h
 	src/example_main.c)
   target_include_directories(example PRIVATE
+	# XXX: forcing every _deps.h to be in src??
+	"${CMAKE_CURRENT_SOURCE_DIR}/src"
 	"${CMAKE_CURRENT_BINARY_DIR}"
 	cstuff/src)
   closure_for(example_closure)

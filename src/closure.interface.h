@@ -4,7 +4,6 @@
 #include "CLOSURE_deps.h"
 #include <assert.h>
 
-
 typedef RETURNS (*CLOSURE_call)(
 	void* arg,
 	FOR_TYPES INIT
@@ -20,6 +19,7 @@ everything between last `name` and END_FOR_TYPES
  */
 
 struct CLOSURE {
+	CLOSURE_call call;
 	void* arg;
 	FOR_TYPES INIT
 	type name;
@@ -42,8 +42,8 @@ struct CLOSURE CLOSURE(
 }
 
 static
-struct RETURNS call_CLOSURE(
-	const CLOSURE* self,
+RETURNS call_CLOSURE(
+	const struct CLOSURE* self,
 	FOR_TYPES
 	type name,
 	END_FOR_TYPES) {
