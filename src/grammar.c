@@ -1,14 +1,17 @@
 #include "grammar.h"
 #include "mystring.h"
 #include "output.h"
+#include "for_types.h"
 
 #include <ctype.h>
 #include <setjmp.h>
 
+static
+void parse_for_types_expression(string buf, string* delim, const struct var v);
 
 void parse(string buf) {
 #include "parser-snippet.h"
-	auto bool for_types(void);
+	auto bool advance_for_types(void);
 
 	////////////////// main:
 
@@ -20,7 +23,7 @@ void parse(string buf) {
 				output_return_type();
 			} else if(advance("CLOSURE")) {
 				output_closure_name();
-			} else if(for_types()) {
+			} else if(advance_for_types()) {
 			} else {
 				onechar();
 			}
@@ -31,7 +34,7 @@ void parse(string buf) {
 		fprintf(stderr, "Uhh %d\n", err);
 		abort();
 	}
-	bool for_types(void) {
+	bool advance_for_types(void) {
 		eat_space();
 		if(pos == buf.len) return false;
 		if(!advance("FOR_TYPES")) return false;
@@ -64,15 +67,16 @@ void parse(string buf) {
 			parse_for_types_expression(
 				expression,
 				i == 0 ? &delim : NULL,
-				&types[i]);
+				types[i]);
 		}
 		canexit = 1;
 		return true;
 	}
 }
 
-void parse_for_types_expression(string buf, string* delim, struct var v) {
-#include "parser_snippet.h"
+static
+void parse_for_types_expression(string buf, string* delim, const struct var v) {
+#include "parser-snippet.h"
 	int err = setjmp(onerr);
 	size_t last_thing = 0;
 	if(err == 0) {
@@ -94,8 +98,8 @@ void parse_for_types_expression(string buf, string* delim, struct var v) {
 		abort();
 	}
 	if(delim) {
-		*delim.base = buf.base + last_thing;
-		*delim.len = buf.len - last_thing;
+		delim->base = buf.base + last_thing;
+		delim->len = buf.len - last_thing;
 	} 	
 }
 				
