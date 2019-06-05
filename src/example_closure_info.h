@@ -20,4 +20,8 @@ static
 const string closure_name = I(example_derp);
 static
 const string return_type = I(struct thing);
-#undef I
+
+static
+const size_t nvars = sizeof(vars) / sizeof(*vars);
+static
+const size_t ninit_vars = sizeof(init_vars) / sizeof(*init_vars);
