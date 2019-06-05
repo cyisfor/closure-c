@@ -94,47 +94,22 @@ void parse(string buf) {
 		canexit = -1;
 		eat_space();
 		bool do_init = false;
-		if(advance("INIT")) {
-			do_init = true;
-			eat_space();
-		}
-		bool do_type = false;
-		bool do_name = false;
-		if(advance("type")) {
-			eat_space();
-			do_type = true;
-			if(pos == buf.len) {
-				output_for_types(do_init, do_type, false, LITSTR(""));
-				longjmp(onerr, 2);
-			}
-			eat_space();
-		}
-		if(advance("name")) {
-			eat_space();
-			if(pos == buf.len) {
-				output_for_types(do_init, do_type, true, LITSTR(""));
-				longjmp(onerr, 3);
+		size_t start = pos;
+		for(;;) {
+			if(advance("INIT")) {
+				do_init = true;
+			} else if(advance("END_FOR_TYPES")) {
+				string expression = {
+					.base = buf.base + start,
+					.len = pos - LITSIZ("END_FOR_TYPES") - start
+				};
+				printf("DERP (%.*s)\n", expression.len, expression.base);
+				break;
+			} else {
+				if(++pos == buf.len) longjmp(onerr, 4);
 			}
 		}
-		string delim = {
-			buf.base + pos,
-			1
-		};
-		while(!isspace(buf.base[++pos])) {
-			++delim.len;
-			if(pos == buf.len) {
-				output_for_types(do_init, do_type, do_name, delim);
-				longjmp(onerr, 1);
-			}
-		}
-		while(!advance("END_FOR_TYPES")) {
-			++delim.len;
-			if(++pos == buf.len) {
-				longjmp(onerr, 3);
-			}
-		}
-
-		output_for_types(do_init, do_type, do_name, delim);
+		
 		canexit = 1;
 		return true;
 	}
