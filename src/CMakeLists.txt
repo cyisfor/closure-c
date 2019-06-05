@@ -1,18 +1,12 @@
 function (closure_for name)
   add_executable(parse_${name}
+	cstuff/src/mmapfile.c
+	src/main.c
 	src/grammar.c
 	src/output.c
 	src/for_types.c)
   target_compile_definitions(parse_${name}
 	-DMY_INFO="${name}_info.h")
-  add_custom_command(
-	OUTPUT ${name}.c
-	COMMAND
-	parse_${name} <closure.implementation.c > ${name}.c
-	MAIN_DEPENDENCY
-	closure.implementation.c
-	DEPENDS
-	parse_${name})
   add_custom_command(
 	OUTPUT ${name}.h
 	COMMAND
@@ -25,8 +19,7 @@ endfunction(closure_for)
 
 if("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
   add_executable(example,
-	example_closure.c
-	src/example.c)
+	example_closure.h
+	src/example_main.c)
   closure_for(example_closure)
 endif()
-  
