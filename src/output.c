@@ -12,7 +12,10 @@ struct var vars[] = {
 	{INITSTR("double"),INITSTR("bar") }
 };
 
-struct var init_vars[0] = {};
+struct var init_vars[] = {
+	{INITSTR("struct thing"), INITSTR("oof")},
+	{INITSTR("void*"),INITSTR("arglebargle") }
+};
 
 size_t nvars = sizeof(vars) / sizeof(*vars);
 size_t ninit_vars = sizeof(init_vars) / sizeof(*init_vars);

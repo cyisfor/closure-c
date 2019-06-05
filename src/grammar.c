@@ -20,13 +20,15 @@ void parse(string buf) {
 #define advance(lit) advancef(LITSTR(lit))
 
 	jmp_buf onerr;
-	int done = -1;
+	int canexit = 1;
 
 	void onechar(void) {
 		fputc(buf.base[pos],stdout);
-		if(++pos == buf.len) longjmp(&onerr, done);
+		if(++pos == buf.len) longjmp(onerr, canexit);
 	}
 
+	auto void eat_space(void);
+	
 	void eat_comment(void) {
 		for(;;) {
 			eat_space();
@@ -59,6 +61,8 @@ void parse(string buf) {
 	}
 
 	auto bool for_types(void);
+
+	////////////////// main:
 	
 	int err = setjmp(onerr);
 	if(err == 0) {
@@ -83,6 +87,7 @@ void parse(string buf) {
 		eat_space();
 		if(pos == buf.len) return false;
 		if(!advance("FOR_TYPES")) return false;
+		canexit = -1;
 		eat_space();
 		bool do_init = false;
 		if(advance("INIT")) {
@@ -124,6 +129,7 @@ void parse(string buf) {
 		}
 			
 		output_for_types(do_init, do_type, do_name, delim);
+		canexit = 1;
 		return true;
 	}
 }
