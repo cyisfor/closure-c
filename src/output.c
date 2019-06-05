@@ -1,25 +1,5 @@
 #include "output.h"
 
-struct var {
-	string type;
-	string name;
-};
-
-#define INITSTR(a) { .base = a, .len = sizeof(a)-1 }
-
-struct var vars[] = {
-	{INITSTR("int"), INITSTR("foo")},
-	{INITSTR("double"),INITSTR("bar") }
-};
-
-struct var init_vars[] = {
-	{INITSTR("struct thing"), INITSTR("oof")},
-	{INITSTR("void*"),INITSTR("arglebargle") }
-};
-
-size_t nvars = sizeof(vars) / sizeof(*vars);
-size_t ninit_vars = sizeof(init_vars) / sizeof(*init_vars);
-
 void output_for_types(bool for_init, bool type, bool name, string delim) {
 	// what about self->name = name ? reparsing? unfolding?
 	size_t i;

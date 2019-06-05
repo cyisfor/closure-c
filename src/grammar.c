@@ -45,30 +45,59 @@ void parse(string buf) {
 				eat_space();
 				start = pos;
 			} else if(advance("END_FOR_TYPES")) {
-				string expression = {
-					.base = buf.base + start,
-					.len = pos - LITSIZ("END_FOR_TYPES") - start
-				};
-				parse_for_types_expression(expression);
 				break;
 			} else {
 				if(++pos == buf.len) longjmp(onerr, 4);
 			}
 		}
-		
+		string expression = {
+			.base = buf.base + start,
+			.len = pos - LITSIZ("END_FOR_TYPES") - start
+		};
+		size_t i, n;
+		struct var* types = for_types(do_init, &n);
+		string delim = {};
+		for(i=0;i<n;++i) {
+			if(i != 0) {
+				output_string(delim);
+			}
+			parse_for_types_expression(
+				expression,
+				i == 0 ? &delim : NULL,
+				&types[i]);
+		}
 		canexit = 1;
 		return true;
 	}
 }
 
-void parse_for_types_expression(string expression,
-								string type,
-								string name) {
+void parse_for_types_expression(string buf, string* delim, struct var v) {
 #include "parser_snippet.h"
 	int err = setjmp(onerr);
+	size_t last_thing = 0;
 	if(err == 0) {
 		while(pos < buf.len) {
 			if(advance("type")) {
+				last_thing = pos;
+				output_string(v.type);
+			} else if(advance("name")) {
+				last_thing = pos;
+				output_string(v.name);
+			} else {
+				onechar();
+			}
+		}
+	} else if(err == 1) {
+		// ok
+	} else {
+		fprintf(stderr, "expression %d\n", err);
+		abort();
+	}
+	if(delim) {
+		*delim.base = buf.base + last_thing;
+		*delim.len = buf.len - last_thing;
+	} 	
+}
 				
 	
 	
