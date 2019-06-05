@@ -2,7 +2,7 @@ typedef RETURNS (*CLOSURE_call)(
 	void* arg,
 	FOR_TYPES INIT
 	type name,
-	END_FOR_TYPES
+	END_FOR_TYPES,
 	FOR_TYPES
 	type name,
 	END_FOR_TYPES);
@@ -25,9 +25,9 @@ struct CLOSURE {
 
 static struct CLOSURE CLOSURE(
 	CLOSURE_call call,
-	void* arg;
+	void* arg,
 	FOR_TYPES INIT
-	type name;
+	type name,
 	END_FOR_TYPES) {
 	return (struct CLOSURE) {
 		.call = call,
@@ -40,15 +40,15 @@ static struct CLOSURE CLOSURE(
 
 static struct RETURNS call_CLOSURE(
 	const CLOSURE* self,
-	void* arg,
 	FOR_TYPES
-	type name;
+	type name,
 	END_FOR_TYPES) {
 	return self->call(
+		self->arg,
 		FOR_TYPES INIT
 		self->name,
 		END_FOR_TYPES
 		FOR_TYPES
-		self->name,
+		name,
 		END_FOR_TYPES);
 }

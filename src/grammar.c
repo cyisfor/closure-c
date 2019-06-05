@@ -80,18 +80,20 @@ static
 void parse_for_types_expression(string buf, string* delim, const struct var v) {
 #include "parser-snippet.h"
 	output = false;
-	int err = setjmp(onerr);
 	size_t last_thing = 0;
 	void commit(int except_for) {
 		if(pos - except_for > last_thing) {
-			output_string(strandlen(
+			output_string((string){
 							  buf.base + last_thing,
-							  pos - except_for - last_thing));
-			last_thing = pos;
+							  pos - except_for - last_thing
+								  });
 		}
+		last_thing = pos;
 	}
+	int err = setjmp(onerr);
 	if(err == 0) {
-		while(pos < buf.len) {
+		for(;;) {
+			// longjmp...
 			if(advance("type")) {
 				commit(4);
 				output_string(v.type);
