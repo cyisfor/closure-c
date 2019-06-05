@@ -3,6 +3,7 @@ typedef RETURNS (*CLOSURE_call)(
 	FOR_TYPES INIT
 	type name,
 	END_FOR_TYPES
+eeee
 	FOR_TYPES
 	type name,
 	END_FOR_TYPES);

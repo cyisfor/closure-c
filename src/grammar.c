@@ -12,7 +12,6 @@ void parse(string buf) {
 		size_t left = buf.len - pos;
 		if(left < s.len) return false;
 		if(0 == memcmp(s.base, buf.base + pos, s.len)) {
-			output_string(s);
 			pos += s.len;
 			return true;
 		}
@@ -29,11 +28,12 @@ void parse(string buf) {
 	}
 
 	auto void eat_space(void);
-	
+
 	void eat_comment(void) {
 		for(;;) {
 			eat_space();
 			if(advance("*/")) {
+				output_string(LITSTR("*/"));
 				break;
 			} else {
 				onechar();
@@ -41,15 +41,18 @@ void parse(string buf) {
 		}
 	}
 
-	
+
 	void eat_space(void) {
 		for(;;) {
 			if(advance("/*")) {
+				output_string(LITSTR("/*"));
 				eat_comment();
 			} else if(advance("//")) {
+				output_string(LITSTR("//"));
 				for(;;) {
 					onechar();
 					if(buf.base[pos] == '\n') {
+						onechar();
 						break;
 					}
 				}
@@ -64,7 +67,7 @@ void parse(string buf) {
 	auto bool for_types(void);
 
 	////////////////// main:
-	
+
 	int err = setjmp(onerr);
 	if(err == 0) {
 		while(pos < buf.len) {
@@ -104,6 +107,7 @@ void parse(string buf) {
 				output_for_types(do_init, do_type, false, LITSTR(""));
 				longjmp(onerr, 2);
 			}
+			eat_space();
 		}
 		if(advance("name")) {
 			eat_space();
@@ -129,7 +133,7 @@ void parse(string buf) {
 				longjmp(onerr, 3);
 			}
 		}
-			
+
 		output_for_types(do_init, do_type, do_name, delim);
 		canexit = 1;
 		return true;
