@@ -59,7 +59,7 @@ void parse(string buf) {
 			.len = pos - LITSIZ("END_FOR_TYPES") - start
 		};
 		size_t i, n;
-		struct var* types = for_types(do_init, &n);
+		const struct var* types = for_types(do_init, &n);
 		string delim = {};
 		for(i=0;i<n;++i) {
 			if(i != 0) {

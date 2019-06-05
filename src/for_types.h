@@ -9,6 +9,6 @@ struct var {
 	string name;
 };
 
-struct var* for_types(bool do_init, size_t* num);
+const struct var* for_types(bool do_init, size_t* num);
 
 #endif /* FOR_TYPES_H */

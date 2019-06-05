@@ -10,10 +10,14 @@ function (closure_for name)
   target_compile_definitions(parse_${name} PRIVATE
 	-DMY_INFO="${name}_info.h")
   target_include_directories(parse_${name} PRIVATE cstuff/src)
+  get_filename_component(CLOSURE_INTERFACE
+	src/closure.interface.h
+	ABSOLUTE
+	BASE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
   add_custom_command(
 	OUTPUT ${name}.h
 	COMMAND
-	parse_${name} <src/closure.interface.h > ${name}.h
+	parse_${name} <"${CLOSURE_INTERFACE}" > ${name}.h
 	MAIN_DEPENDENCY
 	src/closure.interface.h
 	DEPENDS
@@ -24,6 +28,8 @@ if("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
   add_executable(example
 	example_closure.h
 	src/example_main.c)
-  target_include_directories(example PRIVATE cstuff/src)
+  target_include_directories(example PRIVATE
+	"${CMAKE_CURRENT_BINARY_DIR}"
+	cstuff/src)
   closure_for(example_closure)
 endif()
