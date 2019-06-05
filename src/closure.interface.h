@@ -2,6 +2,8 @@
 #define CLOSURE_INTERFACE_H
 
 #include "CLOSURE_deps.h"
+#include <assert.h>
+
 
 typedef RETURNS (*CLOSURE_call)(
 	void* arg,
@@ -18,22 +20,41 @@ everything between last `name` and END_FOR_TYPES
  */
 
 struct CLOSURE {
+	void* arg;
 	FOR_TYPES INIT
 	type name;
-	END_FOR_TYPES
+	END_FOR_TYPES;
 	FOR_TYPES
 	type name;
-	END_FOR_TYPES
+	END_FOR_TYPES;
 };
 
+static
 struct CLOSURE CLOSURE(
 	CLOSURE_call call,
-	struct CLOSURE args);
+	void* arg,
+	struct CLOSURE closure) {
+	assert(call);
+	assert(closure.call == NULL); // ehhhh
+	closure.call = call;
+	closure.arg = arg;
+	return closure;
+}
 
+static
 struct RETURNS call_CLOSURE(
 	const CLOSURE* self,
 	FOR_TYPES
 	type name,
-	END_FOR_TYPES);
+	END_FOR_TYPES) {
+	return self->call(
+		self->arg,
+		FOR_TYPES INIT
+		self->name,
+		END_FOR_TYPES,
+		FOR_TYPES
+		name,
+		END_FOR_TYPES);
+}
 
 #endif /* CLOSURE_INTERFACE_H */
