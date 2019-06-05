@@ -14,7 +14,10 @@ int main(int argc, char *argv[])
 	struct thing thing = {
 		.foo = 19;
 	};
-    struct example_closure c = example_closure(my_callback, thing, NULL);
+    struct example_closure c = example_closure(my_callback, {
+			.oof = thing,
+				.arg = NULL
+				});
 	struct thing answer = example_closure_call(c, 'a', LITSTR("bee"));
 	printf("answer %d\n", answer.foo);
     return 0;
