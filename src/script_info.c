@@ -54,24 +54,28 @@ void load_script_info(int fd) {
 	bool in_init = false;
 
 	bool advance_var(void) {
-		size_t start = pos;
-		if(!advance(" ")) return false;
-		size_t estart = pos;
-		eat_space();
-		size_t end = pos;
-		if(!advance(";")) {
-			pos = start;
-			return false;
+		size_t start_type = pos;
+		if(!advance(";")) return false;
+		size_t end_name = pos-1;
+		size_t start_name = start_type;
+		if(++start_name > buf.len) {
+			longjmp(onerr, 5);
 		}
-		size_t eend = pos;
+		while(start_name < buf.len) {
+			if(!isspace(buf.base[++start_name])) break;
+		}
+		size_t end_type = start_name - 1;
+		while(end_type > start_type) {
+			if(!isspace(buf.base[--end_type])) break;
+		}
 		struct var v = {
 			.type = (string){
-				.base = buf.base + start,
-				.len = estart - start - 1
+				.base = buf.base + start_type,
+				.len = end_type - start_type
 			},
 			.name = (string) {
-				.base = buf.base + end,
-				.len = eend - end - 1
+				.base = buf.base + start_name,
+				.len = end_name - start_name
 			}
 		};
 		if(in_init) {
