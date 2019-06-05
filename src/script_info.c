@@ -41,12 +41,12 @@ void load_script_info(int fd) {
 
 	string parse_line(void) {
 		size_t start = pos;
-		if(!advance("\n")) {
-			longjmp(onerr, 2);
+		while(!advance("\n")) {
+			onechar();
 		}
 		string s = {
 			.base = buf.base + start,
-			.len = pos - start
+			.len = pos - start - 1
 		};
 		return s;
 	}

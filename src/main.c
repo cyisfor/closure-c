@@ -1,4 +1,5 @@
 #include "template.h"
+#include MY_INFO
 #include "mmapfile.h"
 #include "grammar.h"
 

@@ -1,0 +1,8 @@
+example_derp
+struct thing
+INIT:
+struct thing oof;
+void* arglebargle;
+VARS:
+char foo;
+string bar;
