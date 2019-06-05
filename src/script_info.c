@@ -105,9 +105,9 @@ void load_script_info(int fd) {
 		}
 		for(;;) {
 			eat_space();
-			if(advance("INIT\n")) {
+			if(advance("INIT:\n")) {
 				in_init = true;
-			} else if(advance("VARS\n")) {
+			} else if(advance("VARS:\n")) {
 				in_init = false;
 			} else if(advance_var()) {
 			} else {

@@ -60,15 +60,23 @@ void parse(string buf) {
 		};
 		size_t i, n;
 		const struct var* types = for_types(do_init, &n);
-		string delim = {};
-		for(i=0;i<n;++i) {
-			if(i != 0) {
-				output_string(delim);
+		if(n == 0) {
+			// END_FOR_TYPES followed by stuff that could be useless
+			advance(";");
+			advance(",");
+			advance(".");
+			eat_space();
+		} else {
+			string delim = {};
+			for(i=0;i<n;++i) {
+				if(i != 0) {
+					output_string(delim);
+				}
+				parse_for_types_expression(
+					expression,
+					i == 0 ? &delim : NULL,
+					types[i]);
 			}
-			parse_for_types_expression(
-				expression,
-				i == 0 ? &delim : NULL,
-				types[i]);
 		}
 		output = true;
 		canexit = 1;
@@ -116,6 +124,3 @@ void parse_for_types_expression(string buf, string* delim, const struct var v) {
 		delim->len = buf.len - last_thing;
 	}
 }
-				
-	
-	
