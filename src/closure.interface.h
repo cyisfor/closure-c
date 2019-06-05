@@ -1,3 +1,8 @@
+#ifndef CLOSURE_INTERFACE_H
+#define CLOSURE_INTERFACE_H
+
+#include "CLOSURE_deps.h"
+
 typedef RETURNS (*CLOSURE_call)(
 	void* arg,
 	FOR_TYPES INIT
@@ -26,3 +31,5 @@ struct RETURNS call_CLOSURE(
 	FOR_TYPES
 	type name,
 	END_FOR_TYPES);
+
+#endif /* CLOSURE_INTERFACE_H */

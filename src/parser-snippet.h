@@ -36,7 +36,9 @@ void eat_comment(void) {
 
 void eat_space(void) {
 	for(;;) {
-		if(advance("/*")) {
+		if(advance("CLOSURE")) {
+			output_closure_name();
+		} else if(advance("/*")) {
 			output_string(LITSTR("/*"));
 			eat_comment();
 		} else if(advance("//")) {
