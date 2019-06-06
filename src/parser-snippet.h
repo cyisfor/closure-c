@@ -13,12 +13,12 @@ bool consumef(string s) {
 
 bool seekf(string s) {
 	size_t off = 0;
-	while(buf.len > s.len + pos + off) {
+	while(buf.len >= s.len + pos + off) {
 		if(0 == memcmp(s.base, buf.base + pos + off, s.len)) {
 			pos += off;
 			return true;
 		}
-		assert(pos + ++off != buf.len);
+		++off;
 	}
 	return false;
 }
