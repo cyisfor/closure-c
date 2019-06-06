@@ -84,7 +84,7 @@ void script_info_load(int fd) {
 				pos = oldpos;
 				return false;
 			}
-			if(isspace(buf.base[start_name-1])) break;
+			if(isspace(line.base[start_name-1])) break;
 			--start_name;
 		}
 		size_t end_type = start_name-1;
@@ -92,15 +92,15 @@ void script_info_load(int fd) {
 			if(--end_type == start_type) {
 				longjmp(onerr, 7);
 			}
-			if(!isspace(buf.base[end_type-1])) break;
+			if(!isspace(line.base[end_type-1])) break;
 		}
 		struct var v = {
 			.type = (string){
-				.base = buf.base + start_type,
+				.base = line.base + start_type,
 				.len = end_type - start_type
 			},
 			.name = (string) {
-				.base = buf.base + start_name,
+				.base = line.base + start_name,
 				.len = end_name - start_name
 			}
 		};
