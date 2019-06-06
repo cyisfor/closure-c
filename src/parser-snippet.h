@@ -1,5 +1,16 @@
 size_t pos = 0;
 
+void fail(enum failure_state state, const char* fmt, ...) {
+	fprintf(stderr, "buffer: ==============\n%.*s\n============\n",
+			buf.len - pos, buf.base + pos);
+	va_list args;
+	va_start(args, fmt);
+	vfprintf(stderr, fmt, args);
+	va_end(args);
+	fputc('\n', stderr);
+	raise(state);
+}
+
 bool consumef(string s) {
 	size_t left = buf.len - pos;
 	if(left < s.len) return false;

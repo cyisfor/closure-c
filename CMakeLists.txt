@@ -34,6 +34,8 @@ function (closure_for name)
 	OUTPUT ${name}.h
 	COMMAND
 	parse_${name} > ${name}.h
+	MAIN_DEPENDENCY
+	"${A_INFO}"
 	DEPENDS
 	parse_${name})  
 endfunction(closure_for)

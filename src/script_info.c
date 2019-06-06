@@ -8,6 +8,10 @@
 #include <setjmp.h> // 
 #include <assert.h> // 
 #include <ctype.h> // isspace
+#include <stdarg.h> // va_*
+#include <signal.h> // raise
+
+
 
 static void showbuf(string s, size_t pos) {
 	printf("BUF: =====\n%.*s\n====\n", (int)(s.len-pos), s.base+pos);
@@ -18,7 +22,7 @@ struct var* vars = NULL;
 size_t nvars = 0;
 size_t naux_vars = 0;
 
-string preamble = {};
+bstring preamble = {};
 
 string closure_name = {};
 string return_type = {};
@@ -43,6 +47,14 @@ void script_info_load(int fd) {
 			
 	string buf = {script, size};
 
+	enum failure_state {
+		SUCCESS,
+		NO_SPACES_FOUND,
+		NO_NAME,
+		NO_RETURN,
+		EXTRANEOUS
+	};
+	
 #include "parser-snippet.h"
 
 	bool consume_statement(string* line) {
@@ -94,7 +106,8 @@ void script_info_load(int fd) {
 		size_t end_type = start_name ;
 		for(;;) {
 			if(--end_type == start_type) {
-				longjmp(onerr, 7);
+				fail(NO_SPACES_FOUND,
+					 "no space in argument definition");
 			}
 			if(!isspace(line.base[end_type-1])) break;
 		}
@@ -133,11 +146,10 @@ void script_info_load(int fd) {
 			eat_space();
 			size_t start2 = pos;
 			if(seek("\n")) {
-				stradd(&preamble, LITSTR("#include "));
-				stradd(&preamble,
-					   (string){ .base = buf.base + start2,
-							   .len = pos - start2
-							   });
+				straddn(&preamble, LITLEN("#include "));
+				straddn(&preamble,
+						buf.base + start2,
+						pos - start2);
 				straddn(&preamble, "\n", 1);
 				return true;
 			} else {
@@ -155,13 +167,13 @@ void script_info_load(int fd) {
 		while(consume_include());
 			
 		if(false == consume_statement(&closure_name)) {
-			longjmp(onerr, 3);
+			fail(NO_NAME, "no closure name specified");
 		}
 		eat_space();
 		if(true == consume("RETURNS:")) {
 			eat_space();
 			if(false == consume_statement(&return_type)) {
-				longjmp(onerr, 4);
+				fail(NO_RETURN, "RETURNS: without return type");
 			}
 		} else {
 			return_type = LITSTR("void");
@@ -176,7 +188,7 @@ void script_info_load(int fd) {
 			} else if(buf.len == pos) {
 				break;
 			} else {
-				longjmp(onerr, 5); // onechar(); // XXX: ehhhhh
+				fail(EXTRANEOUS, "extraneous characters");
 			}
 		}
 	} else if(err == 1) {

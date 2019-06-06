@@ -6,7 +6,8 @@
 #include <ctype.h>
 #include <setjmp.h>
 #include <assert.h> //
-
+#include <stdarg.h> // va_*
+#include <signal.h> // raise
 static
 void parse_for_types_expression(string buf, string* delim, const struct var v);
 
