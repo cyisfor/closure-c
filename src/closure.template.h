@@ -6,7 +6,7 @@
 
 typedef RETURNS (*CLOSURE_call)(
 	void* arg,
-	FOR_TYPES INIT
+	FOR_TYPES AUX
 	type name,
 	END_FOR_TYPES,
 	FOR_TYPES
@@ -21,7 +21,7 @@ everything between last `name` and END_FOR_TYPES
 struct CLOSURE {
 	CLOSURE_call call;
 	void* arg;
-	FOR_TYPES INIT
+	FOR_TYPES AUX
 	type name;
 	END_FOR_TYPES;
 	FOR_TYPES
@@ -49,7 +49,7 @@ RETURNS call_CLOSURE(
 	END_FOR_TYPES) {
 	return self.call(
 		self.arg,
-		FOR_TYPES INIT
+		FOR_TYPES AUX
 		self.name,
 		END_FOR_TYPES,
 		FOR_TYPES

@@ -5,7 +5,7 @@ add_subdirectory(data_to_header)
 data_to_header(TEMPLATE
   TARGET TEMPLATE
   HEADER template.h
-  SOURCE src/closure.interface.h)
+  SOURCE src/closure.template.h)
 
 function (parse_for name)
   add_executable(parse_${name}
