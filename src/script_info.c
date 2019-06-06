@@ -21,7 +21,7 @@ string return_type = {};
 size_t nvars = 0;
 size_t naux_vars = 0;
 
-void load_script_info(int fd) {
+void script_info_load(int fd) {
 	size_t size = 0;
 	char* script = mmapfd(fd, &size);
 	if(script == NULL) {
@@ -57,8 +57,12 @@ void load_script_info(int fd) {
 
 	bool consume_var(void) {
 		size_t start_type = pos;
-		if(!seek(";")) return false;
-		size_t end_name = pos;
+		size_t end_name;
+		if(seek(";")) {
+			end_name = pos;
+		} else {
+			end_name = buf.len;
+		}
 		++pos;
 		/* have to work backwards because no space in identifiers */
 		size_t start_name = end_name;
@@ -130,6 +134,7 @@ void load_script_info(int fd) {
 			} else if(consume_var()) {
 				// ok
 			} else {
+				fprintf(stderr, "what '%.*s'\n", buf.len - pos, buf.base+pos);
 				longjmp(onerr, 5); // onechar(); // XXX: ehhhhh
 			}
 		}

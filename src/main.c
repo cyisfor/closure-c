@@ -6,7 +6,7 @@
 int main(int argc, char *argv[])
 {
 #ifdef SCRIPT_INFO
-	load_script_info(0);
+	script_info_load(0);
 #endif
 	parse((string){TEMPLATE, TEMPLATE_length});
     return 0;
