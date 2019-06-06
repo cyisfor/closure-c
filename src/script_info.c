@@ -27,8 +27,6 @@ bstring preamble = {};
 string closure_name = {};
 string return_type = {};
 
-string safe_closure_name = {};
-
 void script_info_load(int fd) {
 	size_t size = 0;
 	char* script = mmapfd(fd, &size);
@@ -171,34 +169,6 @@ void script_info_load(int fd) {
 			
 		if(false == consume_statement(&closure_name)) {
 			fail(NO_NAME, "no closure name specified");
-		}
-		size_t i = 0;
-		bstring lazy = {};
-		for(;i<closure_name.len;++i) {
-			switch(closure_name.base[i]) {
-			case '(':
-			case ')':
-			case '"':
-			case '{':
-			case '}':
-			case '[':
-			case ']':
-			case '\'':
-			case ' ':
-				if(lazy.base == NULL) {
-					straddn(&lazy, closure_name.base, closure_name.len);
-					closure_name.base = lazy.base;
-				}
-				lazy.base[i] = '_';
-				break;
-			default:
-				break;
-			};
-		}
-		if(lazy.base == NULL) {
-			safe_closure_name = closure_name;
-		} else {
-			safe_closure_name = lazy;
 		}
 		// can't ever free lazy though... or can you? vvvvv
 		eat_space();
