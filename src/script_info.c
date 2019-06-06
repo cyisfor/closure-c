@@ -115,7 +115,7 @@ void load_script_info(int fd) {
 			longjmp(onerr, 3);
 		}
 		eat_space();
-		if(true == consume("RETURNS")) {
+		if(true == consume("RETURNS:")) {
 			if(false == consume_line(&return_type)) {
 				longjmp(onerr, 4);
 			}
@@ -125,7 +125,7 @@ void load_script_info(int fd) {
 		aux = false;
 		for(;;) {
 			eat_space();
-			if(consume("AUX:\n")) {
+			if(consume("AUX:")) {
 				aux = true;
 			} else if(consume_var()) {
 				// ok

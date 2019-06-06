@@ -3,12 +3,12 @@
 #define I(a) { .base = #a, .len = sizeof(#a)-1 }
 
 static
-const struct var init_vars[] = {
+const struct var aux_vars[] = {
 	{I(struct thing), I(oof)},
 	{I(void*),I(arglebargle)}
 };
 
-// note: init vars could be initialized first, set to null, set later, etc
+// note: aux vars could be auxialized first, set to null, set later, etc
 // but these vars have to be set at the time of the closure call:
 static
 const struct var vars[] = {
@@ -24,4 +24,4 @@ const string return_type = I(struct thing);
 static
 const size_t nvars = sizeof(vars) / sizeof(*vars);
 static
-const size_t ninit_vars = sizeof(init_vars) / sizeof(*init_vars);
+const size_t naux_vars = sizeof(aux_vars) / sizeof(*aux_vars);
