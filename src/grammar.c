@@ -46,7 +46,7 @@ void parse(string buf) {
 		bool do_init = false;
 		size_t start = pos;
 		for(;;) {
-			if(consume("INIT")) {
+			if(consume("AUX")) {
 				do_init = true;
 				eat_space();
 				start = pos;

@@ -12,14 +12,14 @@ static void showbuf(string s, size_t pos) {
 	printf("BUF: =====\n%.*s\n====\n", (int)(s.len-pos), s.base+pos);
 }
 
-struct var* init_vars = NULL;
+struct var* aux_vars = NULL;
 struct var* vars = NULL;
 
 string closure_name = {};
 string return_type = {};
 
 size_t nvars = 0;
-size_t ninit_vars = 0;
+size_t naux_vars = 0;
 
 void load_script_info(int fd) {
 	size_t size = 0;
@@ -42,20 +42,18 @@ void load_script_info(int fd) {
 
 #include "parser-snippet.h"
 
-	string parse_line(void) {
+	bool consume_line(string* line) {
 		size_t start = pos;
-		if(!seek("\n")) {
-			longjmp(onerr, 6);
+		if(!seek(";")) {
+			return false;
 		}
-		string s = {
-			.base = buf.base + start,
-			.len = pos - start
-		};
+		line->base = buf.base + start;
+		line->len = pos - start;
 		++pos; // consume("\n");
-		return s;
+		return true;
 	}
 
-	bool in_init = false;
+	bool aux = false;
 
 	bool consume_var(void) {
 		size_t start_type = pos;
@@ -93,13 +91,13 @@ void load_script_info(int fd) {
 				.len = end_name - start_name
 			}
 		};
-		if(in_init) {
-			++ninit_vars;
-			init_vars = reallocarray(init_vars,
-									 ninit_vars,
-									 sizeof(*init_vars));
-			assert(init_vars);
-			init_vars[ninit_vars-1] = v;
+		if(aux) {
+			++naux_vars;
+			aux_vars = reallocarray(aux_vars,
+									 naux_vars,
+									 sizeof(*aux_vars));
+			assert(aux_vars);
+			aux_vars[naux_vars-1] = v;
 		} else {
 			++nvars;
 			vars = reallocarray(vars,
@@ -113,23 +111,26 @@ void load_script_info(int fd) {
 	int err = setjmp(onerr);
 	if(err == 0) {
 		size_t start = pos;
-		closure_name = parse_line();
-		if(closure_name.len == 0) {
+		if(false == consume_line(&closure_name)) {
 			longjmp(onerr, 3);
 		}
-		return_type = parse_line();
-		if(return_type.len == 0) {
+		eat_space();
+		if(true == consume("RETURNS")) {
+			if(false == consume_line(&return_type)) {
+				longjmp(onerr, 4);
+			}
+		} else {
 			return_type = LITSTR("void");
 		}
+		aux = false;
 		for(;;) {
 			eat_space();
-			if(consume("INIT:\n")) {
-				in_init = true;
-			} else if(consume("VARS:\n")) {
-				in_init = false;
+			if(consume("AUX:\n")) {
+				aux = true;
 			} else if(consume_var()) {
+				// ok
 			} else {
-				onechar(); // XXX: ehhhhh
+				longjmp(onerr, 5); // onechar(); // XXX: ehhhhh
 			}
 		}
 	} else if(err == 1) {
