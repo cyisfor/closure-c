@@ -32,20 +32,6 @@ function (closure_for name)
 	parse_${name})  
 endfunction(closure_for)
 
-if("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
-  include(FindPkgConfig)
-  pkg_check_modules(GLIB REQUIRED IMPORTED_TARGET glib-2.0)
-  add_executable(example
-	example_closure.h
-	src/example_main.c)
-  target_include_directories(example PRIVATE
-	# XXX: forcing every _deps.h to be in src??
-	"${CMAKE_CURRENT_SOURCE_DIR}/src"
-	"${CMAKE_CURRENT_BINARY_DIR}"
-	cstuff/src)
-  target_link_libraries(example PkgConfig::GLIB)
-  closure_for(example_closure)
-endif()
 
 parse_for(script)
 target_sources(parse_script PRIVATE
@@ -59,7 +45,7 @@ function (closure_script name)
   else()
 	set(script "${name}")
   endif()
-  get_filename_component(script, "${script}" ABSOLUTE BASE_DIR
+  get_filename_component(script "${script}" ABSOLUTE BASE_DIR
 	"${CMAKE_CURRENT_SOURCE_DIR}")
   add_custom_command(
 	OUTPUT "${name}.h"
@@ -67,4 +53,22 @@ function (closure_script name)
 	parse_script < "${script}" > "${name}.h")
 endfunction()
 
-closure_script(example2 SCRIPT src/example.script)
+if("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
+  include(FindPkgConfig)
+  pkg_check_modules(GLIB REQUIRED IMPORTED_TARGET glib-2.0)
+  add_executable(example
+	example_closure.h
+	src/example_main.c)
+  target_include_directories(example PRIVATE
+	# XXX: forcing every _deps.h to be in src??
+	"${CMAKE_CURRENT_SOURCE_DIR}/src"
+	"${CMAKE_CURRENT_BINARY_DIR}"
+	cstuff/src)
+  target_link_libraries(example PkgConfig::GLIB)
+  closure_for(example_closure)
+  closure_script(example2 SCRIPT src/example.script)
+  add_executable(example2
+	src/example2.c
+	example2.h)
+
+endif()
