@@ -59,13 +59,15 @@ void script_info_load(int fd) {
 
 	bool consume_statement(string* line) {
 		size_t start = pos;
-		if(!seek(";")) {
-			*line = (string){NULL, 0};
-			return false;
+		if(seek(";")) {
+			line->base = buf.base + start;
+			line->len = pos - start;
+			++pos; // consume(";");
+		} else {
+			line->base = buf.base + start;
+			line->len = buf.len - start;
+			pos = buf.len;
 		}
-		line->base = buf.base + start;
-		line->len = pos - start;
-		++pos; // consume(";");
 		return true;
 	}
 

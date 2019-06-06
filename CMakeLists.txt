@@ -58,11 +58,11 @@ function (closure_script name)
   add_custom_command(
 	OUTPUT "${name}.h"
 	COMMAND
-	parse_script < "${A_SCRIPT}" > "${name}.h")
-  add_custom_target(
-	"${name}_closure"
+	parse_script < "${A_SCRIPT}" > "${name}.h"
+	MAIN_DEPENDENCY
+	"${A_SCRIPT}"
 	DEPENDS
-	"${name}.h")
+	parse_script)
 endfunction()
 
 if("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
@@ -84,5 +84,4 @@ if("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
   add_executable(example2
 	src/example2.c
 	example2.h)
-  add_dependencies(example2 example2_closure)
 endif()
