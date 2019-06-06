@@ -32,14 +32,12 @@ function (closure_for name)
 	parse_${name})  
 endfunction(closure_for)
 
-
 parse_for(script)
 target_sources(parse_script PRIVATE
   src/script_info.c)
 
 function (closure_script name)
-  set(ONEVALUE SCRIPT)
-  cmake_parse_arguments(PARSE_ARGV 1 A "" "${ONEVALUE}" "")
+  cmake_parse_arguments(PARSE_ARGV 1 A "" "SCRIPT" "")
   if(A_SCRIPT)
 	set(script ${A_SCRIPT})
   else()
@@ -67,7 +65,7 @@ if("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
 	cstuff/src)
   target_link_libraries(example PkgConfig::GLIB)
   
-  closure_script(example2 SCRIPT src/example.script)
+  closure_script(example2 SCRIPT src/example2.script)
   add_executable(example2
 	src/example2.c
 	example2.h)
