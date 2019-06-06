@@ -171,6 +171,24 @@ void script_info_load(int fd) {
 		if(false == consume_statement(&closure_name)) {
 			fail(NO_NAME, "no closure name specified");
 		}
+		size_t i = 0;
+		for(;i<closure_name.len;++i) {
+			switch(closure_name[i]) {
+			case '(':
+			case ')':
+			case '"':
+			case '{':
+			case '}':
+			case '[':
+			case ']':
+			case '\'':
+			case ' ':
+				closure_name[i] = '_';
+				break;
+			default:
+				break;
+			};
+		}
 		eat_space();
 		if(true == consume("RETURNS:")) {
 			eat_space();
