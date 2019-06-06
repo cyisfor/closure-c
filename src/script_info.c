@@ -58,11 +58,14 @@ void script_info_load(int fd) {
 	bool consume_var(void) {
 		size_t start_type = pos;
 		size_t end_name;
+		size_t end;
 		if(seek(";")) {
 			end_name = pos;
-			++pos;		
+			++pos;
+			end = pos;
 		} else {
 			end_name = buf.len;
+			end = buf.len;
 		}
 		/* have to work backwards because no space in identifiers */
 		size_t start_name = end_name;
@@ -84,7 +87,7 @@ void script_info_load(int fd) {
 			}
 			if(!isspace(buf.base[end_type-1])) break;
 		}			
-		pos = end_name+1;
+		pos = end;
 		struct var v = {
 			.type = (string){
 				.base = buf.base + start_type,
@@ -110,6 +113,7 @@ void script_info_load(int fd) {
 			assert(vars);
 			vars[nvars-1] = v;
 		}
+		return true;
 	}
 	
 	int err = setjmp(onerr);
