@@ -1,5 +1,7 @@
 size_t pos = 0;
 
+jmp_buf onerr;
+
 void fail(enum failure_state state, const char* fmt, ...) {
 	fprintf(stderr, "buffer: ==============\n%.*s\n============\n",
 			buf.len - pos, buf.base + pos);
@@ -8,7 +10,8 @@ void fail(enum failure_state state, const char* fmt, ...) {
 	vfprintf(stderr, fmt, args);
 	va_end(args);
 	fputc('\n', stderr);
-	raise(state);
+	raise(state); // XXX: eh
+	longjmp(onerr, state);
 }
 
 bool consumef(string s) {
@@ -35,7 +38,6 @@ bool seekf(string s) {
 }
 #define seek(lit) seekf(LITSTR(lit))
 
-jmp_buf onerr;
 int canexit = 1;
 #ifdef OUTPUT
 bool output = true;

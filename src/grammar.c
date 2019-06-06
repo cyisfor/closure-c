@@ -8,10 +8,17 @@
 #include <assert.h> //
 #include <stdarg.h> // va_*
 #include <signal.h> // raise
+
 static
 void parse_for_types_expression(string buf, string* delim, const struct var v);
 
 void parse(string buf) {
+	enum failure_state {
+		SUCCESS,
+		EOF,	
+	};
+
+	
 #define OUTPUT
 #include "parser-snippet.h"
 	auto bool consume_for_types(void);
@@ -56,7 +63,7 @@ void parse(string buf) {
 			} else if(consume("END_FOR_TYPES")) {
 				break;
 			} else {
-				if(++pos == buf.len) longjmp(onerr, 4);
+				if(++pos == buf.len) fail(EOF, "EOF without END_FOR_TYPES");
 			}
 		}
 		string expression = {
@@ -91,6 +98,11 @@ void parse(string buf) {
 
 static
 void parse_for_types_expression(string buf, string* delim, const struct var v) {
+	enum failure_state {
+		SUCCESS,
+		EOF,	
+	};
+
 #define OUTPUT	
 #include "parser-snippet.h"
 	output = false;
