@@ -23,13 +23,13 @@ int main(int argc, char *argv[])
 			.oof = thing,
 				.arglebargle = (void*)0x23
 				});
-	struct thing answer = call_example_derp(c, 'a', LITSTR("bee"));
+	struct thing answer = example_derp_call(c, 'a', LITSTR("bee"));
 	printf("answer %d\n\n", answer.foo);
 
 	struct example_derp* cc = g_slice_copy(
 		sizeof(struct example_derp), &c);
 	// then later in some callback...
-	answer = call_example_derp(*cc, 'Q', LITSTR("bee Q"));
+	answer = example_derp_call(*cc, 'Q', LITSTR("bee Q"));
 	g_slice_free(struct example_derp, cc);
 	printf("answer %d\n", answer.foo);
     return 0;
