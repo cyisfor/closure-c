@@ -27,6 +27,7 @@ bstring preamble = {};
 string closure_name = {};
 string return_type = {};
 
+string safe_closure_name = {};
 
 void script_info_load(int fd) {
 	size_t size = 0;
@@ -194,7 +195,12 @@ void script_info_load(int fd) {
 				break;
 			};
 		}
-		// can't ever free lazy though...
+		if(lazy.base == NULL) {
+			safe_closure_name = closure_name;
+		} else {
+			safe_closure_name = lazy;
+		}
+		// can't ever free lazy though... or can you? vvvvv
 		eat_space();
 		if(true == consume("RETURNS:")) {
 			eat_space();
@@ -224,5 +230,8 @@ void script_info_load(int fd) {
 		fprintf(stderr, "what '%.*s'\n",
 				(int)(buf.len - pos), buf.base+pos);
 		abort();
+	}
+	if(safe_closure_name.base != closure_name.base) {
+		free((char*)safe_closure_name.base);
 	}
 }
