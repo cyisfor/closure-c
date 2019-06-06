@@ -45,6 +45,7 @@ void script_info_load(int fd) {
 	bool consume_line(string* line) {
 		size_t start = pos;
 		if(!seek(";")) {
+			*line = (string){NULL, 0};
 			return false;
 		}
 		line->base = buf.base + start;
@@ -87,7 +88,7 @@ void script_info_load(int fd) {
 			if(isspace(line.base[start_name-1])) break;
 			--start_name;
 		}
-		size_t end_type = start_name-1;
+		size_t end_type = start_name ;
 		for(;;) {
 			if(--end_type == start_type) {
 				longjmp(onerr, 7);
