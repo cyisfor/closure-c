@@ -65,6 +65,7 @@ void load_script_info(int fd) {
 		/* have to work backwards because no space in identifiers */
 		size_t start_name = end_name;
 		if(end_name <= start_type) {
+			pos = start_type;
 			return false;
 		}
 		for(;;) {

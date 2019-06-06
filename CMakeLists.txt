@@ -29,8 +29,7 @@ function (closure_for name)
 	COMMAND
 	parse_${name} > ${name}.h
 	DEPENDS
-	parse_${name})
-  
+	parse_${name})  
 endfunction(closure_for)
 
 if("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
@@ -52,3 +51,20 @@ parse_for(script)
 target_sources(parse_script PRIVATE
   src/script_info.c)
 
+function (closure_script name)
+  set(ONEVALUE SCRIPT)
+  cmake_parse_arguments(PARSE_ARGV 1 A "" "${ONEVALUE}" "")
+  if(A_SCRIPT)
+	set(script ${A_SCRIPT})
+  else()
+	set(script "${name}")
+  endif()
+  get_filename_component(script, "${script}" ABSOLUTE BASE_DIR
+	"${CMAKE_CURRENT_SOURCE_DIR}")
+  add_custom_command(
+	OUTPUT "${name}.h"
+	COMMAND
+	parse_script < "${script}" > "${name}.h")
+endfunction()
+
+closure_script(example2 SCRIPT src/example.script)
