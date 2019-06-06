@@ -5,7 +5,6 @@
 #include <assert.h>
 
 typedef RETURNS (*CLOSURE_call)(
-	void* arg,
 	FOR_TYPES AUX
 	type name,
 	END_FOR_TYPES,
@@ -20,7 +19,6 @@ everything between last `name` and END_FOR_TYPES
 
 struct CLOSURE {
 	CLOSURE_call call;
-	void* arg;
 	FOR_TYPES AUX
 	type name;
 	END_FOR_TYPES;
@@ -32,12 +30,10 @@ struct CLOSURE {
 static
 struct CLOSURE CLOSURE(
 	CLOSURE_call call,
-	void* arg,
 	struct CLOSURE closure) {
 	assert(call);
 	assert(closure.call == NULL); // ehhhh
 	closure.call = call;
-	closure.arg = arg;
 	return closure;
 }
 
@@ -48,7 +44,6 @@ RETURNS call_CLOSURE(
 	type name,
 	END_FOR_TYPES) {
 	return self.call(
-		self.arg,
 		FOR_TYPES AUX
 		self.name,
 		END_FOR_TYPES,

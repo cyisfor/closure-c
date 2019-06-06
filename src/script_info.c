@@ -124,6 +124,7 @@ void script_info_load(int fd) {
 		}
 		eat_space();
 		if(true == consume("RETURNS:")) {
+			eat_space();
 			if(false == consume_line(&return_type)) {
 				longjmp(onerr, 4);
 			}
@@ -140,7 +141,6 @@ void script_info_load(int fd) {
 			} else if(buf.len == pos) {
 				break;
 			} else {
-				fprintf(stderr, "what '%.*s'\n", buf.len - pos, buf.base+pos);
 				longjmp(onerr, 5); // onechar(); // XXX: ehhhhh
 			}
 		}
@@ -148,6 +148,8 @@ void script_info_load(int fd) {
 		// ok
 	} else {
 		fprintf(stderr, "uhhh %d\n", err);
+		fprintf(stderr, "what '%.*s'\n",
+				(int)(buf.len - pos), buf.base+pos);
 		abort();
 	}
 }

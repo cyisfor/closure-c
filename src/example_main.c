@@ -2,10 +2,10 @@
 #include <glib.h> // 
 
 
-struct thing my_callback(void* arg, struct thing thing, void* arglebargle,
+struct thing my_callback(struct thing thing, void* arglebargle,
 						 char foo, string bar) {
 	printf("thing: %d\n", thing.foo);
-	printf("arg: %p %p\n", arg, arglebargle);
+	printf("arg: %p\n", arglebargle);
 	printf("foo: %c\n", foo);
 	printf("bar: %.*s\n", (int)bar.len, bar.base);
 	thing.foo += 23;
@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
 		.foo = 19
 	};
     struct example_derp c = example_derp(
-		my_callback, (void*)0x42,
+		my_callback, 
 		(struct example_derp){
 			.oof = thing,
 				.arglebargle = (void*)0x23
