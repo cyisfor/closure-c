@@ -55,38 +55,45 @@ void script_info_load(int fd) {
 
 	bool aux = false;
 
+	/* smallest var:
+	   start_type = 0
+	   end_type = 1
+	   (1 space)
+	   start_name = 3
+	   end_name = 4
+	*/
+
 	bool consume_var(void) {
-		size_t start_type = pos;
-		size_t end_name;
-		size_t end;
-		if(seek(";")) {
-			end_name = pos - 1;
-			end = ++pos;
-		} else {
-			end_name = buf.len;
-			end = buf.len;
-		}
-		/* have to work backwards because no space in identifiers */
-		size_t start_name = end_name;
-		if(end_name <= start_type) {
-			pos = start_type;
+		string line;
+		size_t oldpos = pos;
+		consume_line(&line);
+		size_t start_type = 0;
+		size_t end_name = line.len;
+		if(end_name < 4) {
+			pos = oldpos;
 			return false;
 		}
-		for(;;) {
-			if(isspace(buf.base[start_name-1])) break;
-			if(--start_name <= start_type) {
-				longjmp(onerr, 6);
-			}
+		/* have to work backwards because no space in identifiers */
+		if(end_name <= start_type) {
+			pos = oldpos;
+			return false;
 		}
-		size_t end_type = start_name;
-		assert(end_type != start_type);
+		size_t start_name = end_name-1;
+		for(;;) {
+			if(start_name < 3) {
+				pos = oldpos;
+				return false;
+			}
+			if(isspace(buf.base[start_name-1])) break;
+			--start_name;
+		}
+		size_t end_type = start_name-1;
 		for(;;) {
 			if(--end_type == start_type) {
 				longjmp(onerr, 7);
 			}
 			if(!isspace(buf.base[end_type-1])) break;
-		}			
-		pos = end;
+		}
 		struct var v = {
 			.type = (string){
 				.base = buf.base + start_type,
