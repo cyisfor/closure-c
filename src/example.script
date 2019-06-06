@@ -1,8 +1,6 @@
-example_derp
-struct thing
-INIT:
+example_derp;
+RETURNS: struct thing;
+char foo; string bar;
+AUX:
 struct thing oof;
-void* arglebargle;
-VARS:
-char foo;
-string bar;
+void* arglebargle
