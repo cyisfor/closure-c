@@ -36,7 +36,7 @@ void load_script_info(int fd) {
 	}
 			
 	string buf = {script, size};
-	
+
 #include "parser-snippet.h"
 
 	string parse_line(void) {
@@ -95,7 +95,6 @@ void load_script_info(int fd) {
 		}
 	}
 	
-	output = false;
 	int err = setjmp(onerr);
 	if(err == 0) {
 		size_t start = pos;
