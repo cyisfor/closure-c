@@ -37,7 +37,11 @@ function (closure_for name)
 	MAIN_DEPENDENCY
 	"${A_INFO}"
 	DEPENDS
-	parse_${name})  
+	parse_${name})
+  add_custom_target(
+	"${name}_closure"
+	DEPENDS
+	"${name}.h")
 endfunction(closure_for)
 
 parse_for(script src/script_info.h)
@@ -55,6 +59,10 @@ function (closure_script name)
 	OUTPUT "${name}.h"
 	COMMAND
 	parse_script < "${A_SCRIPT}" > "${name}.h")
+  add_custom_target(
+	"${name}_closure"
+	DEPENDS
+	"${name}.h")
 endfunction()
 
 if("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
@@ -63,8 +71,8 @@ if("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
   closure_for(example_closure
 	INFO src/example/closure_info.h)
   add_executable(example
-	example_closure.h
 	src/example/main.c)
+  add_dependencies(example example_closure_closure)
   target_include_directories(example PRIVATE
 	# XXX: forcing every _deps.h to be in src??
 	"${CMAKE_CURRENT_SOURCE_DIR}/src/example"
@@ -76,4 +84,5 @@ if("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
   add_executable(example2
 	src/example2.c
 	example2.h)
+  add_dependencies(example2 example2_closure)
 endif()

@@ -15,7 +15,7 @@ void parse_for_types_expression(string buf, string* delim, const struct var v);
 void parse(string buf) {
 	enum failure_state {
 		SUCCESS,
-		EOF,	
+		PAST_END
 	};
 
 	
@@ -63,7 +63,7 @@ void parse(string buf) {
 			} else if(consume("END_FOR_TYPES")) {
 				break;
 			} else {
-				if(++pos == buf.len) fail(EOF, "EOF without END_FOR_TYPES");
+				if(++pos == buf.len) fail(PAST_END, "EOF without END_FOR_TYPES");
 			}
 		}
 		string expression = {
@@ -99,8 +99,7 @@ void parse(string buf) {
 static
 void parse_for_types_expression(string buf, string* delim, const struct var v) {
 	enum failure_state {
-		SUCCESS,
-		EOF,	
+		SUCCESS
 	};
 
 #define OUTPUT	

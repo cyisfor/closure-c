@@ -4,7 +4,7 @@ jmp_buf onerr;
 
 void fail(enum failure_state state, const char* fmt, ...) {
 	fprintf(stderr, "buffer: ==============\n%.*s\n============\n",
-			buf.len - pos, buf.base + pos);
+			(int)(buf.len - pos), buf.base + pos);
 	va_list args;
 	va_start(args, fmt);
 	vfprintf(stderr, fmt, args);
