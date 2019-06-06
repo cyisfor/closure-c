@@ -10,8 +10,9 @@ static
 void parse_for_types_expression(string buf, string* delim, const struct var v);
 
 void parse(string buf) {
+#define OUTPUT
 #include "parser-snippet.h"
-	auto bool advance_for_types(void);
+	auto bool expect_for_types(void);
 
 	////////////////// main:
 
@@ -19,11 +20,11 @@ void parse(string buf) {
 	if(err == 0) {
 		while(pos < buf.len) {
 			eat_space();
-			if(advance("RETURNS")) {
+			if(expect("RETURNS")) {
 				output_return_type();
-			} else if(advance("CLOSURE")) {
+			} else if(expect("CLOSURE")) {
 				output_closure_name();
-			} else if(advance_for_types()) {
+			} else if(expect_for_types()) {
 			} else {
 				onechar();
 			}
@@ -34,21 +35,21 @@ void parse(string buf) {
 		fprintf(stderr, "Uhh %d\n", err);
 		abort();
 	}
-	bool advance_for_types(void) {
+	bool expect_for_types(void) {
 		eat_space();
 		if(pos == buf.len) return false;
-		if(!advance("FOR_TYPES")) return false;
+		if(!expect("FOR_TYPES")) return false;
 		canexit = -1;
 		output = false;
 		eat_space();
 		bool do_init = false;
 		size_t start = pos;
 		for(;;) {
-			if(advance("INIT")) {
+			if(expect("INIT")) {
 				do_init = true;
 				eat_space();
 				start = pos;
-			} else if(advance("END_FOR_TYPES")) {
+			} else if(expect("END_FOR_TYPES")) {
 				break;
 			} else {
 				if(++pos == buf.len) longjmp(onerr, 4);
@@ -62,9 +63,9 @@ void parse(string buf) {
 		const struct var* types = for_types(do_init, &n);
 		if(n == 0) {
 			// END_FOR_TYPES followed by stuff that could be useless
-			advance(";");
-			advance(",");
-			advance(".");
+			expect(";");
+			expect(",");
+			expect(".");
 			eat_space();
 		} else {
 			string delim = {};
@@ -86,6 +87,7 @@ void parse(string buf) {
 
 static
 void parse_for_types_expression(string buf, string* delim, const struct var v) {
+#define OUTPUT	
 #include "parser-snippet.h"
 	output = false;
 	size_t last_thing = 0;
@@ -102,10 +104,10 @@ void parse_for_types_expression(string buf, string* delim, const struct var v) {
 	if(err == 0) {
 		for(;;) {
 			// longjmp...
-			if(advance("type")) {
+			if(expect("type")) {
 				commit(4);
 				output_string(v.type);
-			} else if(advance("name")) {
+			} else if(expect("name")) {
 				commit(4);
 				output_string(v.name);
 			} else {

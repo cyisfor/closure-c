@@ -41,7 +41,7 @@ void load_script_info(int fd) {
 
 	string parse_line(void) {
 		size_t start = pos;
-		while(!advance("\n")) {
+		while(!expect("\n")) {
 			onechar();
 		}
 		string s = {
@@ -53,9 +53,9 @@ void load_script_info(int fd) {
 
 	bool in_init = false;
 
-	bool advance_var(void) {
+	bool expect_var(void) {
 		size_t start_type = pos;
-		if(!advance(";")) return false;
+		if(!expect(";")) return false;
 		size_t end_name = pos-1;
 		size_t start_name = start_type;
 		if(++start_name > buf.len) {
@@ -108,11 +108,11 @@ void load_script_info(int fd) {
 		}
 		for(;;) {
 			eat_space();
-			if(advance("INIT:\n")) {
+			if(expect("INIT:\n")) {
 				in_init = true;
-			} else if(advance("VARS:\n")) {
+			} else if(expect("VARS:\n")) {
 				in_init = false;
-			} else if(advance_var()) {
+			} else if(expect_var()) {
 			} else {
 				onechar(); // XXX: ehhhhh
 			}
