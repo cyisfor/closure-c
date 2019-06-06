@@ -49,7 +49,7 @@ void script_info_load(int fd) {
 		}
 		line->base = buf.base + start;
 		line->len = pos - start;
-		++pos; // consume("\n");
+		++pos; // consume(";");
 		return true;
 	}
 
@@ -60,8 +60,7 @@ void script_info_load(int fd) {
 		size_t end_name;
 		size_t end;
 		if(seek(";")) {
-			end_name = pos;
-			++pos;
+			end_name = pos - 1;
 			end = pos;
 		} else {
 			end_name = buf.len;
