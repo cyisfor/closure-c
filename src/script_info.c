@@ -150,7 +150,7 @@ void script_info_load(int fd) {
 				straddn(&preamble, LITLEN("#include "));
 				straddn(&preamble,
 						buf.base + start2,
-						pos - start2);
+						pos - start2 + 1);
 				return true;
 			} else {
 				pos = start;
@@ -166,7 +166,11 @@ void script_info_load(int fd) {
 		size_t start = pos;
 		while(consume_include());
 		eat_space();
-			
+		// #include etc\n always adds an extra \n at the end
+		if(preamble.len) {
+			assert(preamble.base[preamble.len-1] == '\n');
+			--preamble.len;
+		}
 		if(false == consume_statement(&closure_name)) {
 			fail(NO_NAME, "no closure name specified");
 		}
@@ -200,8 +204,5 @@ void script_info_load(int fd) {
 		fprintf(stderr, "what '%.*s'\n",
 				(int)(buf.len - pos), buf.base+pos);
 		abort();
-	}
-	if(safe_closure_name.base != closure_name.base) {
-		free((char*)safe_closure_name.base);
 	}
 }

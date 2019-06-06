@@ -32,7 +32,7 @@ void parse(string buf) {
 			if(consume("RETURNS")) {
 				output_return_type();
 			} else if(consume("CLOSURE")) {
-				output_closure_name();
+				output_closure_name(false);
 			} else if(consume("PREAMBLE;")) {
 				output_preamble();
 			} else if(consume_for_types()) {

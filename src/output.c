@@ -36,8 +36,7 @@ void output_closure_name(bool safe) {
 				case ' ':
 					if(lazy.base == NULL) {
 						straddn(&lazy, closure_name.base, closure_name.len);
-						closure_name.base = lazy.base;
-					}
+									}
 					lazy.base[i] = '_';
 					break;
 				default:
@@ -47,9 +46,10 @@ void output_closure_name(bool safe) {
 			if(lazy.base == NULL) {
 				safe_closure_name = closure_name;
 			} else {
-				safe_closure_name = lazy;
+				safe_closure_name = STRING(lazy);
 			}
 		}
+		s = safe_closure_name;			
 	} else {
 		s = closure_name;
 	}

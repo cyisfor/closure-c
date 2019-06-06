@@ -72,7 +72,7 @@ void eat_space(void) {
 		if(consume("CLOSURE")) {
 			/* XXX: why put this here? where to put it? */
 #ifdef OUTPUT
-			output_closure_name();
+			output_closure_name(true);
 #endif
 		} else if(consume("/*")) {
 #ifdef OUTPUT			

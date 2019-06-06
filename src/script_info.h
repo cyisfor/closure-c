@@ -13,7 +13,6 @@ extern size_t naux_vars;
 extern bstring preamble;
 
 extern string closure_name;
-extern string safe_closure_name;
 extern string return_type;
 
 void script_info_load(int fd);
