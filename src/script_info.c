@@ -62,20 +62,25 @@ void load_script_info(int fd) {
 		if(!seek(";")) return false;
 		size_t end_name = pos;
 		++pos;
-		size_t end_type = start_type;
-		if(++end_type > buf.len) {
-			longjmp(onerr, 5);
+		/* have to work backwards because no space in identifiers */
+		size_t start_name = end_name;
+		if(end_name <= start_type) {
+			return false;
 		}
 		for(;;) {
-			if(isspace(buf.base[end_type])) break;
-			if(++end_type > buf.len) {
+			if(isspace(buf.base[start_name-1])) break;
+			if(--start_name <= start_type) {
 				longjmp(onerr, 6);
 			}
 		}
-		size_t start_name = end_type;
-		pos = start_name;
-		eat_space();
-		size_t end_type = pos;
+		size_t end_type = start_name;
+		assert(end_type != start_type);
+		for(;;) {
+			if(--end_type == start_type) {
+				longjmp(onerr, 7);
+			}
+			if(!isspace(buf.base[end_type-1])) break;
+		}			
 		pos = end_name+1;
 		struct var v = {
 			.type = (string){
