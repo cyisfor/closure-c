@@ -61,7 +61,7 @@ void script_info_load(int fd) {
 		size_t end;
 		if(seek(";")) {
 			end_name = pos - 1;
-			end = pos;
+			end = ++pos;
 		} else {
 			end_name = buf.len;
 			end = buf.len;
