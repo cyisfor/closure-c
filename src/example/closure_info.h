@@ -27,4 +27,4 @@ static
 const size_t naux_vars = sizeof(aux_vars) / sizeof(*aux_vars);
 
 static const
-string preamble = "#include \"mystring.h\"";
+string preamble = I(#include "mystring.h");

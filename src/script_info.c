@@ -1,6 +1,7 @@
 #include "script_info.h"
 #include "output.h"
 #include "mmapfile.h"
+#include "mystring.h"
 
 #include <unistd.h> // read
 #include <stdlib.h> // realloc
@@ -129,29 +130,24 @@ void script_info_load(int fd) {
 		size_t start = pos;
 		eat_space();
 		if(consume("#include ")) {
-			stradd(&preamble, LITSTR("#include "));
 			eat_space();
 			size_t start2 = pos;
 			if(seek("\n")) {
+				stradd(&preamble, LITSTR("#include "));
 				stradd(&preamble,
 					   (string){ .base = buf.base + start2,
 							   .len = pos - start2
 							   });
+				straddn(&preamble, "\n", 1);
+				return true;
 			} else {
 				pos = start;
 				return false;
 			}
-		if(!seek(";")) {
-			*line = (string){NULL, 0};
-			return false;
 		}
-		line->base = buf.base + start;
-		line->len = pos - start;
-		++pos; // consume(";");
-		return true;
-	}
-
-		
+		pos = start;
+		return false;
+	}	
 	
 	int err = setjmp(onerr);
 	if(err == 0) {

@@ -10,7 +10,7 @@ extern struct var* vars;
 extern size_t nvars;
 extern size_t naux_vars;
 
-extern string preamble;
+extern bstring preamble;
 
 extern string closure_name;
 extern string return_type;

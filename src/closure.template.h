@@ -1,6 +1,8 @@
 #ifndef CLOSURE_INTERFACE_H
 #define CLOSURE_INTERFACE_H
 
+PREAMBLE;
+
 #include <stddef.h> // NULL
 #include <assert.h>
 
