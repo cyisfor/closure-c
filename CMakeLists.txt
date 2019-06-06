@@ -15,6 +15,8 @@ function (parse_for name info)
 	src/output.c
 	src/for_types.c)
   add_dependencies(parse_${name} TEMPLATE)
+  get_filename_component(info "${info}" ABSOLUTE BASE_DIR
+	"${CMAKE_CURRENT_SOURCE_DIR}")
   target_compile_definitions(parse_${name} PRIVATE
 	-DMY_INFO="${info}")
   target_include_directories(parse_${name} PRIVATE
@@ -27,7 +29,7 @@ function (closure_for name)
   if(NOT A_INFO)
 	set(A_INFO "src/${name}_info.h")
   endif()
-  parse_for(${name}, ${info})
+  parse_for(${name} ${A_INFO})
   add_custom_command(
 	OUTPUT ${name}.h
 	COMMAND

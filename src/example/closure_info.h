@@ -1,5 +1,5 @@
 #include "mystring.h"
-#include "for_types.h"
+#include "../for_types.h"
 #define I(a) { .base = #a, .len = sizeof(#a)-1 }
 
 static
