@@ -60,10 +60,10 @@ void script_info_load(int fd) {
 		size_t end_name;
 		if(seek(";")) {
 			end_name = pos;
+			++pos;		
 		} else {
 			end_name = buf.len;
 		}
-		++pos;
 		/* have to work backwards because no space in identifiers */
 		size_t start_name = end_name;
 		if(end_name <= start_type) {
@@ -133,6 +133,8 @@ void script_info_load(int fd) {
 				aux = true;
 			} else if(consume_var()) {
 				// ok
+			} else if(buf.len == pos) {
+				break;
 			} else {
 				fprintf(stderr, "what '%.*s'\n", buf.len - pos, buf.base+pos);
 				longjmp(onerr, 5); // onechar(); // XXX: ehhhhh
