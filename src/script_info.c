@@ -14,12 +14,14 @@ static void showbuf(string s, size_t pos) {
 
 struct var* aux_vars = NULL;
 struct var* vars = NULL;
+size_t nvars = 0;
+size_t naux_vars = 0;
+
+string preamble = {};
 
 string closure_name = {};
 string return_type = {};
 
-size_t nvars = 0;
-size_t naux_vars = 0;
 
 void script_info_load(int fd) {
 	size_t size = 0;
@@ -42,7 +44,7 @@ void script_info_load(int fd) {
 
 #include "parser-snippet.h"
 
-	bool consume_line(string* line) {
+	bool consume_statement(string* line) {
 		size_t start = pos;
 		if(!seek(";")) {
 			*line = (string){NULL, 0};
@@ -67,7 +69,7 @@ void script_info_load(int fd) {
 	bool consume_var(void) {
 		string line;
 		size_t oldpos = pos;
-		consume_line(&line);
+		consume_statement(&line);
 		size_t start_type = 0;
 		size_t end_name = line.len;
 		if(end_name < 4) {
@@ -122,17 +124,47 @@ void script_info_load(int fd) {
 		}
 		return true;
 	}
+
+	bool consume_include() {
+		size_t start = pos;
+		eat_space();
+		if(consume("#include ")) {
+			stradd(&preamble, LITSTR("#include "));
+			eat_space();
+			size_t start2 = pos;
+			if(seek("\n")) {
+				stradd(&preamble,
+					   (string){ .base = buf.base + start2,
+							   .len = pos - start2
+							   });
+			} else {
+				pos = start;
+				return false;
+			}
+		if(!seek(";")) {
+			*line = (string){NULL, 0};
+			return false;
+		}
+		line->base = buf.base + start;
+		line->len = pos - start;
+		++pos; // consume(";");
+		return true;
+	}
+
+		
 	
 	int err = setjmp(onerr);
 	if(err == 0) {
 		size_t start = pos;
-		if(false == consume_line(&closure_name)) {
+		while(consume_include());
+			
+		if(false == consume_statement(&closure_name)) {
 			longjmp(onerr, 3);
 		}
 		eat_space();
 		if(true == consume("RETURNS:")) {
 			eat_space();
-			if(false == consume_line(&return_type)) {
+			if(false == consume_statement(&return_type)) {
 				longjmp(onerr, 4);
 			}
 		} else {

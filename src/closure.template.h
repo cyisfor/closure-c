@@ -1,7 +1,6 @@
 #ifndef CLOSURE_INTERFACE_H
 #define CLOSURE_INTERFACE_H
 
-#include "CLOSURE_deps.h"
 #include <stddef.h> // NULL
 #include <assert.h>
 

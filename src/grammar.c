@@ -16,7 +16,8 @@ void parse(string buf) {
 	auto bool consume_for_types(void);
 
 	////////////////// main:
-
+	output_preamble();
+	
 	int err = setjmp(onerr);
 	if(err == 0) {
 		while(pos < buf.len) {

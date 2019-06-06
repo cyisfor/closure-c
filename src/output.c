@@ -2,6 +2,10 @@
 
 #include MY_INFO
 
+void output_preamble(void) {
+	fwrite(STRANDLEN(preamble), 1, stdout);
+}
+
 void output_char(char c) {
 	fputc(c, stdout);
 }

@@ -7,11 +7,13 @@ extern struct var* aux_vars;
 // but these vars have to be set at the time of the closure call:
 extern struct var* vars;
 
+extern size_t nvars;
+extern size_t naux_vars;
+
+extern string preamble;
+
 extern string closure_name;
 extern string return_type;
 
 void script_info_load(int fd);
 #define SCRIPT_INFO // XXX some weird cpp thing eh...
-
-extern size_t nvars;
-extern size_t naux_vars;

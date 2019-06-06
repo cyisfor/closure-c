@@ -1,6 +1,11 @@
-#include "example_closure.h"
-#include <glib.h> // 
+#include "mystring.h"
+struct thing {
+	int foo;
+};
 
+#include "example_closure.h"
+
+#include <glib.h> 
 
 struct thing my_callback(struct thing thing, void* arglebargle,
 						 char foo, string bar) {
