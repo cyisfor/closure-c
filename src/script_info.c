@@ -172,7 +172,7 @@ void script_info_load(int fd) {
 			fail(NO_NAME, "no closure name specified");
 		}
 		size_t i = 0;
-		char* base = (char*)closure_name.base; // sigh
+		bstring lazy = {};
 		for(;i<closure_name.len;++i) {
 			switch(closure_name.base[i]) {
 			case '(':
@@ -184,12 +184,17 @@ void script_info_load(int fd) {
 			case ']':
 			case '\'':
 			case ' ':
-				base[i] = '_';
+				if(lazy.base == NULL) {
+					straddn(&lazy, closure_name.base, closure_name.len);
+					closure_name.base = lazy.base;
+				}
+				lazy.base[i] = '_';
 				break;
 			default:
 				break;
 			};
 		}
+		// can't ever free lazy though...
 		eat_space();
 		if(true == consume("RETURNS:")) {
 			eat_space();
