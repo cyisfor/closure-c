@@ -1,3 +1,4 @@
+#include "mystring.h"
 example_derp;
 RETURNS: struct thing;
 char foo; string bar;

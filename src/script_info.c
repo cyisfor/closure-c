@@ -152,7 +152,6 @@ void script_info_load(int fd) {
 				straddn(&preamble,
 						buf.base + start2,
 						pos - start2);
-				straddn(&preamble, "\n", 1);
 				return true;
 			} else {
 				pos = start;
@@ -167,6 +166,7 @@ void script_info_load(int fd) {
 	if(err == 0) {
 		size_t start = pos;
 		while(consume_include());
+		eat_space();
 			
 		if(false == consume_statement(&closure_name)) {
 			fail(NO_NAME, "no closure name specified");
