@@ -11,7 +11,7 @@ bool consumef(string s) {
 }
 #define consume(lit) consumef(LITSTR(lit))
 
-void seekf(string s) {
+bool seekf(string s) {
 	size_t off = 0;
 	while(buf.len - pos - off > s.len) {
 		if(0 == memcmp(s.base, buf.base + pos + off, s.len)) {

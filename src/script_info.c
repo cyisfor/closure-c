@@ -8,6 +8,9 @@
 #include <assert.h> // 
 #include <ctype.h> // isspace
 
+static void showbuf(string s, size_t pos) {
+	printf("BUF: =====\n%.*s\n====\n", (int)(s.len-pos), s.base+pos);
+}
 
 struct var* init_vars = NULL;
 struct var* vars = NULL;
@@ -46,8 +49,9 @@ void load_script_info(int fd) {
 		}
 		string s = {
 			.base = buf.base + start,
-			.len = pos - start - 1
+			.len = pos - start
 		};
+		++pos; // consume("\n");
 		return s;
 	}
 
@@ -57,17 +61,22 @@ void load_script_info(int fd) {
 		size_t start_type = pos;
 		if(!seek(";")) return false;
 		size_t end_name = pos;
-		size_t start_name = start_type;
-		if(++start_name > buf.len) {
+		++pos;
+		size_t end_type = start_type;
+		if(++end_type > buf.len) {
 			longjmp(onerr, 5);
 		}
-		while(start_name < buf.len) {
-			if(!isspace(buf.base[++start_name])) break;
+		for(;;) {
+			if(isspace(buf.base[end_type])) break;
+			if(++end_type > buf.len) {
+				longjmp(onerr, 6);
+			}
 		}
-		size_t end_type = start_name - 1;
-		while(end_type > start_type) {
-			if(!isspace(buf.base[--end_type])) break;
-		}
+		size_t start_name = end_type;
+		pos = start_name;
+		eat_space();
+		size_t end_type = pos;
+		pos = end_name+1;
 		struct var v = {
 			.type = (string){
 				.base = buf.base + start_type,
