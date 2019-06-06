@@ -41,9 +41,7 @@ void load_script_info(int fd) {
 
 	string parse_line(void) {
 		size_t start = pos;
-		while(!expect("\n")) {
-			onechar();
-		}
+		seek("\n");
 		string s = {
 			.base = buf.base + start,
 			.len = pos - start - 1
@@ -53,10 +51,10 @@ void load_script_info(int fd) {
 
 	bool in_init = false;
 
-	bool expect_var(void) {
+	bool consume_var(void) {
 		size_t start_type = pos;
-		if(!expect(";")) return false;
-		size_t end_name = pos-1;
+		seek(";");
+		size_t end_name = pos;
 		size_t start_name = start_type;
 		if(++start_name > buf.len) {
 			longjmp(onerr, 5);
@@ -108,11 +106,11 @@ void load_script_info(int fd) {
 		}
 		for(;;) {
 			eat_space();
-			if(expect("INIT:\n")) {
+			if(consume("INIT:\n")) {
 				in_init = true;
-			} else if(expect("VARS:\n")) {
+			} else if(consume("VARS:\n")) {
 				in_init = false;
-			} else if(expect_var()) {
+			} else if(consume_var()) {
 			} else {
 				onechar(); // XXX: ehhhhh
 			}

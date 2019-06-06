@@ -12,7 +12,7 @@ void parse_for_types_expression(string buf, string* delim, const struct var v);
 void parse(string buf) {
 #define OUTPUT
 #include "parser-snippet.h"
-	auto bool expect_for_types(void);
+	auto bool consume_for_types(void);
 
 	////////////////// main:
 
@@ -20,11 +20,11 @@ void parse(string buf) {
 	if(err == 0) {
 		while(pos < buf.len) {
 			eat_space();
-			if(expect("RETURNS")) {
+			if(consume("RETURNS")) {
 				output_return_type();
-			} else if(expect("CLOSURE")) {
+			} else if(consume("CLOSURE")) {
 				output_closure_name();
-			} else if(expect_for_types()) {
+			} else if(consume_for_types()) {
 			} else {
 				onechar();
 			}
@@ -35,21 +35,21 @@ void parse(string buf) {
 		fprintf(stderr, "Uhh %d\n", err);
 		abort();
 	}
-	bool expect_for_types(void) {
+	bool consume_for_types(void) {
 		eat_space();
 		if(pos == buf.len) return false;
-		if(!expect("FOR_TYPES")) return false;
+		if(!consume("FOR_TYPES")) return false;
 		canexit = -1;
 		output = false;
 		eat_space();
 		bool do_init = false;
 		size_t start = pos;
 		for(;;) {
-			if(expect("INIT")) {
+			if(consume("INIT")) {
 				do_init = true;
 				eat_space();
 				start = pos;
-			} else if(expect("END_FOR_TYPES")) {
+			} else if(consume("END_FOR_TYPES")) {
 				break;
 			} else {
 				if(++pos == buf.len) longjmp(onerr, 4);
@@ -63,9 +63,9 @@ void parse(string buf) {
 		const struct var* types = for_types(do_init, &n);
 		if(n == 0) {
 			// END_FOR_TYPES followed by stuff that could be useless
-			expect(";");
-			expect(",");
-			expect(".");
+			consume(";");
+			consume(",");
+			consume(".");
 			eat_space();
 		} else {
 			string delim = {};
@@ -104,10 +104,10 @@ void parse_for_types_expression(string buf, string* delim, const struct var v) {
 	if(err == 0) {
 		for(;;) {
 			// longjmp...
-			if(expect("type")) {
+			if(consume("type")) {
 				commit(4);
 				output_string(v.type);
-			} else if(expect("name")) {
+			} else if(consume("name")) {
 				commit(4);
 				output_string(v.name);
 			} else {
