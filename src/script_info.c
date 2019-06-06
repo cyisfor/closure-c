@@ -172,8 +172,9 @@ void script_info_load(int fd) {
 			fail(NO_NAME, "no closure name specified");
 		}
 		size_t i = 0;
+		char* base = (char*)closure_name.base; // sigh
 		for(;i<closure_name.len;++i) {
-			switch(closure_name[i]) {
+			switch(closure_name.base[i]) {
 			case '(':
 			case ')':
 			case '"':
@@ -183,7 +184,7 @@ void script_info_load(int fd) {
 			case ']':
 			case '\'':
 			case ' ':
-				closure_name[i] = '_';
+				base[i] = '_';
 				break;
 			default:
 				break;
