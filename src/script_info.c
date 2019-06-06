@@ -41,7 +41,9 @@ void load_script_info(int fd) {
 
 	string parse_line(void) {
 		size_t start = pos;
-		seek("\n");
+		if(!seek("\n")) {
+			longjmp(onerr, 6);
+		}
 		string s = {
 			.base = buf.base + start,
 			.len = pos - start - 1
@@ -53,7 +55,7 @@ void load_script_info(int fd) {
 
 	bool consume_var(void) {
 		size_t start_type = pos;
-		seek(";");
+		if(!seek(";")) return false;
 		size_t end_name = pos;
 		size_t start_name = start_type;
 		if(++start_name > buf.len) {

@@ -11,23 +11,24 @@ bool consumef(string s) {
 }
 #define consume(lit) consumef(LITSTR(lit))
 
+void seekf(string s) {
+	size_t off = 0;
+	while(buf.len - pos - off > s.len) {
+		if(0 == memcmp(s.base, buf.base + pos + off, s.len)) {
+			pos += off;
+			return true;
+		}
+		assert(pos + ++off != buf.len);
+	}
+	return false;
+}
+#define seek(lit) seekf(LITSTR(lit))
+
 jmp_buf onerr;
 int canexit = 1;
 #ifdef OUTPUT
 bool output = true;
 #endif
-
-void seekf(string s) {
-	while(buf.len - pos > s.len) {
-		if(0 == memcmp(s.base, buf.base + pos, s.len)) {
-			return;
-		}
-		assert(++pos != buf.len);
-	}
-	longjmp(onerr, canexit);
-}
-#define seek(lit) seekf(LITSTR(lit))
-
 
 void onechar(void) {
 #ifdef OUTPUT
