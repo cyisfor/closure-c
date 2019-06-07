@@ -64,7 +64,6 @@ void do_one(struct parser* p, string delim, string expression, bool aux) {
 		}
 		parse_for_expression(
 			expression,
-			NULL,
 			types[i]);
 	}
 }
