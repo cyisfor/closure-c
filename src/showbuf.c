@@ -39,13 +39,13 @@ void showstr(const char* s, size_t from, size_t to) {
 	for(i=0;i<to;++i) {
 		switch(s[from+i]) {
 		case ' ':
-			putchar(0xb9);
+			putchar('-');
 			break;
 		case '\t':
-			putchar(0xb2);
+			fputs("→",stdout);
 			break;
 		case '\n':
-			putchar(0xb3);
+			fputs("¶",stdout);
 			break;
 		default:
 			putchar(s[from+i]);

@@ -38,7 +38,9 @@ bool consume_universal_stuff(struct parser* p) {
 bool consume_for_types(struct parser* p) {
 	if(P(pos) == P(buf.len)) return false;
 	if(!consume(p, "FOR_TYPES")) return false;
+	p->output = false; // SIGH
 	eat_space(p);
+	p->output = true;
 	size_t start = P(pos);
 	if(seek(p, "END_FOR_TYPES")) {
 		string expression = {
