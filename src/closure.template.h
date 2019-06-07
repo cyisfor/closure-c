@@ -1,7 +1,5 @@
 #pragma once
-
 PREAMBLE;
-
 #include "concatsym.h"
 
 #include <stddef.h> // NULL
