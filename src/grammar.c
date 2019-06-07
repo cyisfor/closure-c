@@ -12,11 +12,12 @@
 static
 void parse_for_types_expression(string buf, string* delim, const struct var v);
 
+enum failure_state {
+	SUCCESS,
+	PAST_END
+};
+
 void parse(string buf) {
-	enum failure_state {
-		SUCCESS,
-		PAST_END
-	};
 
 	
 #define OUTPUT
@@ -65,8 +66,8 @@ void parse(string buf) {
 		canexit = -1;
 		output = false;
 		eat_space();
-		enum section { NONE, VAR, AUX, ALL };
-		enum section section = VAR, previous_section = NONE;
+		enum section { NO_SECTION, VAR, AUX, ALL };
+		enum section section = VAR, previous_section = NO_SECTION;
 		size_t start = pos;
 		bool add_tail = false;
 		bool add_head = false;
@@ -94,10 +95,10 @@ void parse(string buf) {
 		}
 
 		void prepare_for_section(enum section which) {
-			section = which;
 			eat_space();
-			start = pos;
-			if(previous_section != NONE) {				
+			if(previous_section != NO_SECTION) {
+				expression.base = buf.base + start;
+				expression.len = pos - start;
 				parse_for_types_expression(
 					expression,
 					&delim,
@@ -115,9 +116,12 @@ void parse(string buf) {
 					break;
 				};
 			}
+			previous_section = section;
+			section = which;
 		}
 		for(;;) {
 			eat_space();
+			start = pos;
 			if(consume("VAR")) {
 				prepare_for_section(VAR);
 			} else if(consume("AUX")) {
@@ -127,13 +131,9 @@ void parse(string buf) {
 			} else if(consume("TAIL")) {
 				assert(previous_section == NO_SECTION);
 				add_tail = true;
-				eat_space();
-				start = pos;
 			} else if(consume("HEAD")) {
 				assert(previous_section == NO_SECTION);
 				add_head = true;
-				eat_space();
-				start = pos;				
 			} else if(consume("END_FOR_TYPES")) {
 				prepare_for_section(NO_SECTION);
 				break;

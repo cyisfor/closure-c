@@ -1,59 +1,60 @@
+struct parser_c
 size_t pos = 0;
 
 jmp_buf onerr;
 
-void fail(enum failure_state state, const char* fmt, ...) {
+void fail(struct parser* p, enum failure_state state, const char* fmt, ...) {
 	fprintf(stderr, "buffer: ==============\n%.*s\n============\n",
-			(int)(buf.len - pos), buf.base + pos);
+			(int)(P(buf.len) - P(pos)), P(buf.base) + P(pos));
 	va_list args;
 	va_start(args, fmt);
 	vfprintf(stderr, fmt, args);
 	va_end(args);
 	fputc('\n', stderr);
-	raise(state); // XXX: eh
-	longjmp(onerr, state);
+	exit(state); // XXX: eh
+	longjmp(P(onerr), state);
 }
 
-bool consumef(string s) {
-	size_t left = buf.len - pos;
+bool consumef(struct parser* p, string s) {
+	size_t left = P(buf.len) - P(pos);
 	if(left < s.len) return false;
-	if(0 == memcmp(s.base, buf.base + pos, s.len)) {
-		pos += s.len;
+	if(0 == memcmp(s.base, P(buf.base) + P(pos), s.len)) {
+		P(pos) += s.len;
 		return true;
 	}
 	return false;
 }
-#define consume(lit) consumef(LITSTR(lit))
+#define consume(lit) consumef(p, LITSTR(lit))
 
-bool seekf(string s) {
+bool seekf(struct parser* p, string s) {
 	size_t off = 0;
-	while(buf.len >= s.len + pos + off) {
-		if(0 == memcmp(s.base, buf.base + pos + off, s.len)) {
-			pos += off;
+	while(P(buf.len) >= s.len + P(pos) + off) {
+		if(0 == memcmp(s.base, P(buf.base) + P(pos) + off, s.len)) {
+			P(pos) += off;
 			return true;
 		}
 		++off;
 	}
 	return false;
 }
-#define seek(lit) seekf(LITSTR(lit))
+#define seek(lit) seekf(p, LITSTR(lit))
 
 int canexit = 1;
 #ifdef OUTPUT
 bool output = true;
 #endif
 
-void onechar(void) {
+void onechar(struct parser* p) {
 #ifdef OUTPUT
-	if(output) fputc(buf.base[pos],stdout);
+	if(output) fputc(P(buf.base)[P(pos)],stdout);
 #endif
-	if(++pos == buf.len) longjmp(onerr, canexit);
+	if(++P(pos) == P(buf.len)) longjmp(onerr, canexit);
 }
 
-// XXX: why does this have to go here?
-auto bool consume_universal_stuff(void);
+// XXX: uh oh...
+static bool consume_universal_stuff(struct parser* p);
 
-auto void eat_space(void);
+static void eat_space(void);
 
 void eat_comment(void) {
 	for(;;) {
@@ -85,12 +86,12 @@ void eat_space(void) {
 #endif
 			for(;;) {
 				onechar();
-				if(buf.base[pos] == '\n') {
+				if(P(buf.base)[P(pos)] == '\n') {
 					onechar();
 					break;
 				}
 			}
-		} else if(isspace(buf.base[pos])) {
+		} else if(isspace(P(buf.base)[P(pos)])) {
 			onechar();
 		} else {
 			return;
