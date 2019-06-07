@@ -69,12 +69,11 @@ void do_one(struct ftparser* p, string delim, string expression, bool aux) {
 }
 
 static
-void prepare_for_section(struct ftparser* p, enum section which) {
-	eat_space(p);
+void prepare_for_section(struct ftparser* p, size_t goback, enum section which) {
 	if(P(previous_section) != NO_SECTION) {
 		string expression = {
 			.base  = P(buf.base) + P(prevpos),
-			.len = P(pos) - P(prevpos)
+			.len = P(pos) - P(prevpos) - goback
 		};
 		string delim = find_delim(p, expression);
 		expression.len -= delim.len;
@@ -115,11 +114,11 @@ bool parse_for_types(string expression, string* outdelim) {
 	for(;;) {
 		eat_space(p);
 		if(consume(p, "VAR")) {
-			prepare_for_section(p, VAR);
+			prepare_for_section(p, 3, VAR);
 		} else if(consume(p, "AUX")) {
-			prepare_for_section(p, AUX);
+			prepare_for_section(p, 3, AUX);
 		} else if(consume(p, "ALL")) {
-			prepare_for_section(p, ALL);
+			prepare_for_section(p, 3, ALL);
 		} else if(consume(p, "TAIL")) {
 			assert(P(previous_section) == NO_SECTION);
 			add_tail = true;
@@ -128,7 +127,7 @@ bool parse_for_types(string expression, string* outdelim) {
 			P(ready_for_delim) = true;
 		} else {
 			if(P(pos) == P(buf.len)) {
-				prepare_for_section(p, NO_SECTION);
+				prepare_for_section(p, 0,  NO_SECTION);
 				if(P(ready_for_delim) && add_tail) {
 					output_string(p->delim);
 				}

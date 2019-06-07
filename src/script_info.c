@@ -32,11 +32,6 @@ enum failure_state {
 #include "parser-impl.c.h"
 
 static
-void showbuf(string s, size_t pos) {
-	printf("BUF: =====\n%.*s\n====\n", (int)(s.len-pos), s.base+pos);
-}
-
-static
 bool consume_universal_stuff(struct parser* p) {
 	return false;
 }
