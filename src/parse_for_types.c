@@ -1,3 +1,12 @@
+#include "parse_for_types.h"
+#include "mystring.h"
+#include "output.h"
+
+#include <setjmp.h>
+#include <stdarg.h>
+#include <ctype.h> // 
+
+
 enum failure_state {
 	SUCCESS
 };
@@ -21,10 +30,9 @@ bool consume_universal_stuff(struct parser* p) {
 	return false;
 }
 
-static
 void parse_for_types_expression(string buf, string* delim, const struct var v) {
 	struct parser pp = {
-		.output = false;
+		.output = false
 	};
 	struct parser* p = &pp;
 	size_t last_thing = 0;
@@ -37,20 +45,20 @@ void parse_for_types_expression(string buf, string* delim, const struct var v) {
 		}
 		last_thing = P(pos);
 	}
-	int err = setjmp(onerr);
+	int err = setjmp(pp.onerr);
 	if(err == 0) {
 		for(;;) {
 			// longjmp...
-			if(consume("type")) {
+			if(consume(p, "type")) {
 				commit(4);
 				if(delim == NULL)
 					output_string(v.type);
-			} else if(consume("name")) {
+			} else if(consume(p, "name")) {
 				commit(4);
 				if(delim == NULL)
 					output_string(v.name);
 			} else {
-				onechar();
+				onechar(p);
 			}
 		}
 	} else if(err == 1) {
