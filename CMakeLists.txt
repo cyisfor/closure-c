@@ -24,8 +24,19 @@ function (parse_for name info)
 	cstuff/src)
 endfunction(parse_for)
 
+function(closure_setup_targets header targets)
+  if(targets)
+	foreach(target IN LISTS targets)
+	  target_sources("${target}" "${header}")
+	  target_include_directories("${target}" PUBLIC
+		"${CMAKE_CURRENT_BINARY_DIR}"
+		cstuff/src)
+	endforeach(target)
+  endif()
+endfunction(closure_setup_targets)
+
 function (closure_for name)
-  cmake_parse_arguments(PARSE_ARGV 1 A "" "INFO" "")
+  cmake_parse_arguments(PARSE_ARGV 1 A "" "INFO" "TARGETS")
   if(NOT A_INFO)
 	set(A_INFO "src/${name}_info.h")
   endif()
@@ -38,6 +49,7 @@ function (closure_for name)
 	"${A_INFO}"
 	DEPENDS
 	parse_${name})
+  closure_setup_targets("${name}.h" "${A_TARGETS}")
 endfunction(closure_for)
 
 parse_for(script src/script_info.h)
@@ -45,7 +57,7 @@ target_sources(parse_script PRIVATE
   src/script_info.c)
 
 function (closure_script name)
-  cmake_parse_arguments(PARSE_ARGV 1 A "" "SCRIPT" "")
+  cmake_parse_arguments(PARSE_ARGV 1 A "" "SCRIPT" "TARGETS")
   if(NOT A_SCRIPT)
 	set(A_SCRIPT "${name}")
   endif()
@@ -59,25 +71,24 @@ function (closure_script name)
 	"${A_SCRIPT}"
 	DEPENDS
 	parse_script)
+  closure_setup_targets("${name}.h" "${A_TARGETS}")
 endfunction()
 
 if("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
   include(FindPkgConfig)
   pkg_check_modules(GLIB REQUIRED IMPORTED_TARGET glib-2.0)
-  closure_for(example_closure
-	INFO src/example/closure_info.h)
   add_executable(example
-	example_closure.h
 	src/example/main.c)
-  target_include_directories(example PRIVATE
-	# XXX: forcing every _deps.h to be in src??
-	"${CMAKE_CURRENT_SOURCE_DIR}/src/example"
-	"${CMAKE_CURRENT_BINARY_DIR}"
-	cstuff/src)
   target_link_libraries(example PkgConfig::GLIB)
+
+  closure_for(example_closure
+	TARGETS example
+	INFO src/example/closure_info.h)
   
-  closure_script(example2 SCRIPT src/example2.script)
   add_executable(example2
-	src/example2.c
-	example2.h)
+	src/example2.c)
+  closure_script(example2
+	TARGETS example2
+	SCRIPT src/example2.script)
+
 endif()
