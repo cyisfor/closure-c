@@ -10,6 +10,7 @@ data_to_header(TEMPLATE
 add_library(libparse
   	cstuff/src/mmapfile.c
 	src/parse_for_types.c
+	src/parse_for_expression.c
 	src/parse.c)
 add_dependencies(libparse TEMPLATE)
 target_include_directories(libparse PUBLIC

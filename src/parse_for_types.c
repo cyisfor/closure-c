@@ -1,4 +1,5 @@
 #include "parse_for_types.h"
+#include "parse_for_expression.h"
 #include "mystring.h"
 #include "output.h"
 

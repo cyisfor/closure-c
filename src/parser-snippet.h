@@ -1,3 +1,7 @@
+#include "mystring.h"
+#include <setjmp.h>
+#include <string.h>
+
 #define P(arg) (p->arg)
 static
 void fail(struct parser* p, enum failure_state state, const char* fmt, ...) {

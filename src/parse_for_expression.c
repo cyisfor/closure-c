@@ -1,3 +1,5 @@
+#include "parse_for_expression.h"
+
 struct parser {
 	string buf;
 	size_t pos;
