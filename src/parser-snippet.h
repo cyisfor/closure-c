@@ -1,7 +1,3 @@
-struct parser_c
-size_t pos = 0;
-
-jmp_buf onerr;
 
 void fail(struct parser* p, enum failure_state state, const char* fmt, ...) {
 	fprintf(stderr, "buffer: ==============\n%.*s\n============\n",
@@ -56,43 +52,43 @@ static bool consume_universal_stuff(struct parser* p);
 
 static void eat_space(void);
 
-void eat_comment(void) {
+void eat_comment(struct parser* p) {
 	for(;;) {
-		eat_space();
-		if(consume("*/")) {
+		eat_space(p);
+		if(consume(p, "*/")) {
 #ifdef OUTPUT
 			output_string(LITSTR("*/"));
 #endif
 			break;
-		} else if(consume_universal_stuff()) {
+		} else if(consume_universal_stuff(p)) {
 		} else {
-			onechar();
+			onechar(p);
 		}
 	}
 }
 
 
-void eat_space(void) {
+void eat_space(struct parser* p) {
 	for(;;) {
-		if(consume_universal_stuff()) {
-		} else if(consume("/*")) {
+		if(consume_universal_stuff(p)) {
+		} else if(consume(p, "/*")) {
 #ifdef OUTPUT			
 			output_string(LITSTR("/*"));
 #endif
-			eat_comment();
-		} else if(consume("//")) {
+			eat_comment(p);
+		} else if(consume(p, "//")) {
 #ifdef OUTPUT
 			output_string(LITSTR("//"));
 #endif
 			for(;;) {
-				onechar();
+				onechar(p);
 				if(P(buf.base)[P(pos)] == '\n') {
-					onechar();
+					onechar(p);
 					break;
 				}
 			}
 		} else if(isspace(P(buf.base)[P(pos)])) {
-			onechar();
+			onechar(p);
 		} else {
 			return;
 		}
