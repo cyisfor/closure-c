@@ -1,3 +1,4 @@
+#define P(arg) (p->(arg))
 
 void fail(struct parser* p, enum failure_state state, const char* fmt, ...) {
 	fprintf(stderr, "buffer: ==============\n%.*s\n============\n",
@@ -20,7 +21,7 @@ bool consumef(struct parser* p, string s) {
 	}
 	return false;
 }
-#define consume(lit) consumef(p, LITSTR(lit))
+#define consume(p, lit) consumef(p, LITSTR(lit))
 
 bool seekf(struct parser* p, string s) {
 	size_t off = 0;
@@ -33,18 +34,14 @@ bool seekf(struct parser* p, string s) {
 	}
 	return false;
 }
-#define seek(lit) seekf(p, LITSTR(lit))
+#define seek(p, lit) seekf(p, LITSTR(lit))
 
-int canexit = 1;
-#ifdef OUTPUT
-bool output = true;
-#endif
 
 void onechar(struct parser* p) {
 #ifdef OUTPUT
-	if(output) fputc(P(buf.base)[P(pos)],stdout);
+	if(P(output)) fputc(P(buf.base)[P(pos)],stdout);
 #endif
-	if(++P(pos) == P(buf.len)) longjmp(onerr, canexit);
+	if(++P(pos) == P(buf.len)) longjmp(P(onerr), P(canexit));
 }
 
 // XXX: uh oh...
@@ -57,7 +54,9 @@ void eat_comment(struct parser* p) {
 		eat_space(p);
 		if(consume(p, "*/")) {
 #ifdef OUTPUT
-			output_string(LITSTR("*/"));
+			if(P(output)) {
+				output_string(LITSTR("*/"));
+			}
 #endif
 			break;
 		} else if(consume_universal_stuff(p)) {
@@ -72,13 +71,17 @@ void eat_space(struct parser* p) {
 	for(;;) {
 		if(consume_universal_stuff(p)) {
 		} else if(consume(p, "/*")) {
-#ifdef OUTPUT			
-			output_string(LITSTR("/*"));
+#ifdef OUTPUT
+			if(P(output)) {
+				output_string(LITSTR("/*"));
+			}
 #endif
 			eat_comment(p);
 		} else if(consume(p, "//")) {
 #ifdef OUTPUT
-			output_string(LITSTR("//"));
+			if(P(output)) {
+				output_string(LITSTR("//"));
+			}
 #endif
 			for(;;) {
 				onechar(p);
