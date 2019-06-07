@@ -5,7 +5,9 @@ PREAMBLE;
 #include <stddef.h> // NULL
 #include <assert.h>
 
-typedef RETURNS (*CONCATSYM(CLOSURE,_callback))(
+#define CALLBACK CONCATSYM(CLOSURE,_callback)
+
+typedef RETURNS (*CALLBACK)(
 	FOR_TYPES ALL
 	type name,
 	END_FOR_TYPES);
@@ -16,7 +18,7 @@ everything between last `name` and END_FOR_TYPES
  */
 
 struct CLOSURE {
-	CONCATSYM(CLOSURE,_callback) call;
+	CALLBACK call;
 	FOR_TYPES TAIL ALL
 	type name;
 	END_FOR_TYPES
@@ -24,7 +26,7 @@ struct CLOSURE {
 
 static
 struct CLOSURE CLOSURE(
-	CONCATSYM(CLOSURE,_callback) call,
+	CALLBACK call,
 	struct CLOSURE closure) {
 	assert(call);
 	assert(closure.call == NULL); // ehhhh
@@ -44,3 +46,5 @@ RETURNS CONCATSYM(CLOSURE,_call)(
 		name,
 		END_FOR_TYPES);
 }
+
+#undef CALLBACK
