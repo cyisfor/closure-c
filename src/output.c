@@ -34,7 +34,6 @@ void output_closure_name(bool safe) {
 						straddn(&lazy, closure_name.base, closure_name.len);
 									}
 					lazy.base[i] = '_';
-					break;
 				}
 			}
 			if(lazy.base == NULL) {
