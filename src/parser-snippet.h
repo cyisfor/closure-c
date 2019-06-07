@@ -1,5 +1,5 @@
 #define P(arg) (p->arg)
-
+static
 void fail(struct parser* p, enum failure_state state, const char* fmt, ...) {
 	fprintf(stderr, "buffer: ==============\n%.*s\n============\n",
 			(int)(P(buf.len) - P(pos)), P(buf.base) + P(pos));
@@ -11,7 +11,7 @@ void fail(struct parser* p, enum failure_state state, const char* fmt, ...) {
 	exit(state); // XXX: eh
 	longjmp(P(onerr), state);
 }
-
+static
 bool consumef(struct parser* p, string s) {
 	size_t left = P(buf.len) - P(pos);
 	if(left < s.len) return false;
@@ -22,7 +22,7 @@ bool consumef(struct parser* p, string s) {
 	return false;
 }
 #define consume(p, lit) consumef(p, LITSTR(lit))
-
+static
 bool seekf(struct parser* p, string s) {
 	size_t off = 0;
 	while(P(buf.len) >= s.len + P(pos) + off) {
@@ -36,7 +36,7 @@ bool seekf(struct parser* p, string s) {
 }
 #define seek(p, lit) seekf(p, LITSTR(lit))
 
-
+static
 void onechar(struct parser* p) {
 #ifdef OUTPUT
 	if(P(output)) fputc(P(buf.base)[P(pos)],stdout);
@@ -45,10 +45,13 @@ void onechar(struct parser* p) {
 }
 
 // XXX: uh oh...
-static bool consume_universal_stuff(struct parser* p);
+static
+bool consume_universal_stuff(struct parser* p);
 
-static void eat_space(struct parser* p);
+static
+void eat_space(struct parser* p);
 
+static
 void eat_comment(struct parser* p) {
 	for(;;) {
 		eat_space(p);
@@ -66,7 +69,7 @@ void eat_comment(struct parser* p) {
 	}
 }
 
-
+static
 void eat_space(struct parser* p) {
 	for(;;) {
 		if(consume_universal_stuff(p)) {

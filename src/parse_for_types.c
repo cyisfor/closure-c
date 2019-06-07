@@ -3,25 +3,39 @@ enum failure_state {
 };
 
 #define OUTPUT
+
+struct parser {
+	string buf;
+	size_t pos;
+	jmp_buf onerr;
+	bool noexit;
+#ifdef OUTPUT
+	bool output;
+#endif
+};	
+
 #include "parser-snippet.h"
 
 static
-bool consume_universal_stuff(void) {
+bool consume_universal_stuff(struct parser* p) {
 	return false;
 }
 
 static
 void parse_for_types_expression(string buf, string* delim, const struct var v) {
-	P(output) = false;
+	struct parser pp = {
+		.output = false;
+	};
+	struct parser* p = &pp;
 	size_t last_thing = 0;
 	void commit(int except_for) {
-		if(delim == NULL && pos - except_for > last_thing) {
+		if(delim == NULL && P(pos) - except_for > last_thing) {
 			output_string((string){
-							  buf.base + last_thing,
-							  pos - except_for - last_thing
+							  P(buf.base) + last_thing,
+							  P(pos) - except_for - last_thing
 								  });
 		}
-		last_thing = pos;
+		last_thing = P(pos);
 	}
 	int err = setjmp(onerr);
 	if(err == 0) {
@@ -47,7 +61,7 @@ void parse_for_types_expression(string buf, string* delim, const struct var v) {
 	}
 	// don't commit the last last thing, save for delim
 	if(delim) {
-		delim->base = buf.base + last_thing;
-		delim->len = buf.len - last_thing;
+		delim->base = P(buf.base) + last_thing;
+		delim->len = P(buf.len) - last_thing;
 	}
 }
