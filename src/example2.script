@@ -1,5 +1,5 @@
 #include "mystring.h"
-example_derp;
+example(derp);
 RETURNS: struct thing;
 char foo; string bar;
 AUX:

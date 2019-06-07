@@ -1,4 +1,6 @@
 #include "output.h"
+#include <ctype.h> // 
+
 
 #include MY_INFO
 
@@ -24,24 +26,16 @@ void output_closure_name(bool safe) {
 			size_t i = 0;
 			bstring lazy = {};
 			for(;i<closure_name.len;++i) {
-				switch(closure_name.base[i]) {
-				case '(':
-				case ')':
-				case '"':
-				case '{':
-				case '}':
-				case '[':
-				case ']':
-				case '\'':
-				case ' ':
+				if(isalnum(closure_name.base[i]) ||
+				   closure_name.base[i] == '_') {
+					// yay
+				} else {
 					if(lazy.base == NULL) {
 						straddn(&lazy, closure_name.base, closure_name.len);
 									}
 					lazy.base[i] = '_';
 					break;
-				default:
-					break;
-				};
+				}
 			}
 			if(lazy.base == NULL) {
 				safe_closure_name = closure_name;
