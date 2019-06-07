@@ -17,6 +17,8 @@ enum failure_state {
 
 #define OUTPUT
 
+enum section { NO_SECTION, VAR, AUX, ALL };
+
 struct parser {
 	string buf;
 	size_t pos;
@@ -25,6 +27,10 @@ struct parser {
 #ifdef OUTPUT
 	bool output;
 #endif
+	bool gotsome;
+	bool add_head;
+	enum section section;
+	enum section previous_section;
 };	
 
 #include "parser-snippet.h"
@@ -50,16 +56,16 @@ bool consume_universal_stuff(struct parser* p) {
 }
 
 static
-void do_one(struct parser* p, string expression, bool aux) {
+void do_one(struct parser* p, string delim, string expression, bool aux) {
 	size_t i, n;
 	const struct var* types = for_types(aux, &n);
 	for(i=0;i<n;++i) {
-		if(gotsome) {
-			output_string(P(delim));
+		if(P(gotsome)) {
+			output_string(delim);
 		} else {
-			gotsome = true;
-			if(add_head) {
-				output_string(P(delim));
+			P(gotsome) = true;
+			if(P(add_head)) {
+				output_string(delim);
 			}
 		}
 		parse_for_types_expression(
@@ -68,8 +74,6 @@ void do_one(struct parser* p, string expression, bool aux) {
 			types[i]);
 	}
 }
-
-enum section { NO_SECTION, VAR, AUX, ALL };
 
 static
 void prepare_for_section(struct parser* p, enum section which) {
@@ -112,9 +116,8 @@ bool consume_for_types(struct parser* p) {
 	enum section section = VAR, previous_section = NO_SECTION;
 	size_t start = P(pos);
 	bool add_tail = false;
-	bool add_head = false;
-	string expression = {};
-	bool gotsome = false;
+	P(add_head) = false;
+	P(gotsome) = false;
 	string delim = {};
 
 	for(;;) {
@@ -139,7 +142,7 @@ bool consume_for_types(struct parser* p) {
 			if(++P(pos) == P(buf.len)) fail(PAST_END, "EOF without END_FOR_TYPES");
 		}
 	}		
-	if(gotsome) {
+	if(P(gotsome)) {
 		if(add_tail) {
 			output_string(delim);
 		}
