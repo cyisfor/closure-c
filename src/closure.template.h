@@ -37,8 +37,8 @@ struct CLOSURE CLOSURE(
 
 static
 RETURNS CONCATSYM(CLOSURE,_call)(
-	const struct CLOSURE self,
-	FOR_TYPES
+	const struct CLOSURE self
+	FOR_TYPES HEAD
 	type name,
 	END_FOR_TYPES) {
 	return self.call(

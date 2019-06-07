@@ -68,6 +68,7 @@ void parse(string buf) {
 		enum { NO_AUX, AUX, ALL } in_aux = NO_AUX;
 		size_t start = pos;
 		bool add_tail = false;
+		bool add_head = false;
 		for(;;) {
 			eat_space();
 			if(consume("AUX")) {
@@ -82,6 +83,10 @@ void parse(string buf) {
 				add_tail = true;
 				eat_space();
 				start = pos;
+			} else if(consume("HEAD")) {
+				add_head = true;
+				eat_space();
+				start = pos;				
 			} else if(consume("END_FOR_TYPES")) {
 				break;
 			} else {
@@ -102,6 +107,9 @@ void parse(string buf) {
 					output_string(delim);
 				} else {
 					gotsome = true;
+					if(add_head)
+						output_string(delim);
+					
 				}
 				parse_for_types_expression(
 					expression,
