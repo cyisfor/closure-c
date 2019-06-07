@@ -1,6 +1,3 @@
-#include "mystring.h"
-#include <setjmp.h>
-#include <string.h>
 
 #define P(arg) (p->arg)
 static
