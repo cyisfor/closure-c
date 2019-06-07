@@ -1,13 +1,7 @@
 #include "parse_for_expression.h"
 
-struct parser {
-	string buf;
-	size_t pos;
-	jmp_buf onerr;
-	bool noexit;
-};
-
-#include "parser-snippet.h"
+#include "parser-interface.h"
+#include "parser-impl.c.h"
 
 static
 bool consume_universal_stuff(struct parser* p) {

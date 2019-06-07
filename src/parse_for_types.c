@@ -8,6 +8,8 @@ enum failure_state {
 };
 #include "parser-interface.h"
 
+enum section { NO_SECTION, VAR, AUX, ALL };
+
 struct ftparser {
 	struct parser;
 	
@@ -18,7 +20,7 @@ struct ftparser {
 	size_t prevpos;
 };
 
-#include "parser-impl.h"
+#include "parser-impl.c.h"
 
 static
 bool consume_universal_stuff(struct parser* p) {

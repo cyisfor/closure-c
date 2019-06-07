@@ -5,11 +5,10 @@
 
 #include <unistd.h> // read
 #include <stdlib.h> // realloc
-#include <setjmp.h> // 
 #include <assert.h> // 
 #include <ctype.h> // isspace
-#include <stdarg.h> // va_*
 #include <signal.h> // raise
+
 
 struct var* aux_vars = NULL;
 struct var* vars = NULL;
@@ -29,18 +28,8 @@ enum failure_state {
 	EXTRANEOUS
 };
 
-
-struct parser {
-	string buf;
-	size_t pos;
-	jmp_buf onerr;
-	bool noexit;
-#ifdef OUTPUT
-	bool output;
-#endif
-};	
-
-#include "parser-snippet.h"
+#include "parser-interface.h"
+#include "parser-impl.c.h"
 
 static
 void showbuf(string s, size_t pos) {

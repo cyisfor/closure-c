@@ -1,3 +1,5 @@
+#include <stdarg.h> // va_*
+#include <ctype.h> // isspace
 
 #define P(arg) (p->arg)
 static

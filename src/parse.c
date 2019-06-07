@@ -11,17 +11,6 @@ enum failure_state {
 #define OUTPUT
 
 #include "parser-interface.h"
-enum section { NO_SECTION, VAR, AUX, ALL };
-
-struct main_parser {
-	struct parser;
-	bool gotsome;
-	bool add_head;
-	enum section section;
-	enum section previous_section;
-	size_t prevpos;
-};	
-
 #include "parser-impl.c.h"
 
 static
@@ -45,7 +34,7 @@ bool consume_universal_stuff(struct parser* p) {
 }
 
 
-bool consume_for_types(struct main_parser* p) {
+bool consume_for_types(struct parser* p) {
 	eat_space(p);
 	if(P(pos) == P(buf.len)) return false;
 	if(!consume(p, "FOR_TYPES")) return false;
@@ -74,10 +63,10 @@ bool consume_for_types(struct main_parser* p) {
 }
 
 void parse(string buf) {
-	struct main_parser pp = {
+	struct parser pp = {
 		.buf = buf
 	};
-	struct main_parser* p = &pp;
+	struct parser* p = &pp;
 
 	////////////////// main:
 
