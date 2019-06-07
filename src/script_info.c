@@ -177,38 +177,37 @@ void script_info_load(int fd) {
 	}
 			
 	struct parser pp = {
-		.buf = {script, size},
-		.aux = false
-	}
+		.buf = {script, size}
+	};
+	struct parser* p = &pp;
 	
-	
-		int err = setjmp(onerr);
+	int err = setjmp(pp.onerr);
 	if(err == 0) {
 		size_t start = P(pos);
-		while(consume_include());
-		eat_space();
+		while(consume_include(p));
+		eat_space(p);
 		// #include etc\n always adds an extra \n at the end
 		if(preamble.len) {
 			assert(preamble.base[preamble.len-1] == '\n');
 			--preamble.len;
 		}
-		if(false == consume_statement(&closure_name)) {
+		if(false == consume_statement(p, &closure_name)) {
 			fail(p, NO_NAME, "no closure name specified");
 		}
 		// can't ever free lazy though... or can you? vvvvv
-		eat_space();
-		if(true == consume("RETURNS:")) {
-			eat_space();
-			if(false == consume_statement(&return_type)) {
+		eat_space(p);
+		if(true == consume(p, "RETURNS:")) {
+			eat_space(p);
+			if(false == consume_statement(p, &return_type)) {
 				fail(p, NO_RETURN, "RETURNS: without return type");
 			}
 		} else {
 			return_type = LITSTR("void");
 		}
-		aux = false;
+		bool aux = false;
 		for(;;) {
-			eat_space();
-			if(consume("AUX:")) {
+			eat_space(p);
+			if(consume(p, "AUX:")) {
 				aux = true;
 			} else if(consume_var(p, aux)) {
 				// ok
