@@ -67,6 +67,7 @@ void parse(string buf) {
 		eat_space();
 		enum { NO_AUX, AUX, ALL } in_aux = NO_AUX;
 		size_t start = pos;
+		bool add_tail = false;
 		for(;;) {
 			if(consume("AUX")) {
 				in_aux = AUX;
@@ -76,6 +77,8 @@ void parse(string buf) {
 				in_aux = ALL;
 				eat_space();
 				start = pos;
+			} else if(consume("TAIL")) {
+				add_tail = true;
 			} else if(consume("END_FOR_TYPES")) {
 				break;
 			} else {
@@ -115,14 +118,23 @@ void parse(string buf) {
 			do_one(false);
 			break;
 		};
-		if(!gotsome) {
-			// END_FOR_TYPES followed by stuff that could be useless
-			// XXX: this is a total hack
-			consume(";");
-			consume(",");
-			consume("."); // ?
-			eat_space();
+		// END_FOR_TYPES followed by stuff that could be useless
+		// XXX: this is a total hack
+		consume(";");
+		consume(",");
+		consume("."); // ?
+		eat_space();
+		
+		if(gotsome) {
+			if(add_tail) {
+				consume(delim);
+				string derp = {delim.base,1};
+				consume(derp);
+				output_string(delim);
+			}
 		}
+		
+
 		output = true;
 		canexit = 1;
 		return true;

@@ -20,7 +20,7 @@ everything between last `name` and END_FOR_TYPES
 
 struct CLOSURE {
 	CONCATSYM(CLOSURE,_callback) call;
-	FOR_TYPES ALL
+	FOR_TYPES ALL TAIL
 	type name;
 	END_FOR_TYPES;
 };
@@ -42,9 +42,9 @@ RETURNS CONCATSYM(CLOSURE,_call)(
 	type name,
 	END_FOR_TYPES) {
 	return self.call(
-		FOR_TYPES AUX
+		FOR_TYPES AUX TAIL
 		self.name,
-		END_FOR_TYPES,
+		END_FOR_TYPES
 		FOR_TYPES
 		name,
 		END_FOR_TYPES);
