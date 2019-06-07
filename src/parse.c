@@ -76,8 +76,9 @@ void do_one(struct parser* p, string delim, string expression, bool aux) {
 }
 
 static
-void prepare_for_section(struct parser* p, size_t start, enum section which) {
+void prepare_for_section(struct parser* p, enum section which) {
 	eat_space(p);
+	size_t start = P(pos);
 	if(P(previous_section) != NO_SECTION) {
 		string expression = {
 			.base  = P(buf.base) + start,
@@ -114,7 +115,6 @@ bool consume_for_types(struct parser* p) {
 	P(output) = false;
 	eat_space(p);
 	enum section section = VAR, previous_section = NO_SECTION;
-	size_t start = P(pos);
 	bool add_tail = false;
 	P(add_head) = false;
 	P(gotsome) = false;
@@ -122,13 +122,12 @@ bool consume_for_types(struct parser* p) {
 
 	for(;;) {
 		eat_space(p);
-		start = P(pos);
 		if(consume(p, "VAR")) {
-			prepare_for_section(p, start, VAR);
+			prepare_for_section(p, VAR);
 		} else if(consume(p, "AUX")) {
-			prepare_for_section(p, start, AUX);
+			prepare_for_section(p, AUX);
 		} else if(consume(p, "ALL")) {
-			prepare_for_section(p, start, ALL);
+			prepare_for_section(p, ALL);
 		} else if(consume(p, "TAIL")) {
 			assert(previous_section == NO_SECTION);
 			add_tail = true;
@@ -136,7 +135,7 @@ bool consume_for_types(struct parser* p) {
 			assert(previous_section == NO_SECTION);
 			P(add_head) = true;
 		} else if(consume(p, "END_FOR_TYPES")) {
-			prepare_for_section(p, start, NO_SECTION);
+			prepare_for_section(p, NO_SECTION);
 			break;
 		} else {
 			if(++P(pos) == P(buf.len)) fail(p, PAST_END, "EOF without END_FOR_TYPES");
@@ -162,7 +161,9 @@ bool consume_for_types(struct parser* p) {
 }
 
 void parse(string buf) {
-	struct parser pp = {};
+	struct parser pp = {
+		.buf = buf
+	};
 	struct parser* p = &pp;
 
 	////////////////// main:

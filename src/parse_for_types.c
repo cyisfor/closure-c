@@ -32,7 +32,8 @@ bool consume_universal_stuff(struct parser* p) {
 
 void parse_for_types_expression(string buf, string* delim, const struct var v) {
 	struct parser pp = {
-		.output = false
+		.output = false,
+		.buf = buf
 	};
 	struct parser* p = &pp;
 	size_t last_thing = 0;
