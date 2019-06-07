@@ -27,7 +27,7 @@ endfunction(parse_for)
 function(closure_setup_targets header targets)
   if(targets)
 	foreach(target IN LISTS targets)
-	  target_sources("${target}" "${header}")
+	  target_sources("${target}" PUBLIC "${header}")
 	  target_include_directories("${target}" PUBLIC
 		"${CMAKE_CURRENT_BINARY_DIR}"
 		cstuff/src)
