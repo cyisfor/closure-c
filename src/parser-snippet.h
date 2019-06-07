@@ -50,6 +50,9 @@ void onechar(void) {
 	if(++pos == buf.len) longjmp(onerr, canexit);
 }
 
+// XXX: why does this have to go here?
+auto void consume_universal_stuff(void);
+
 auto void eat_space(void);
 
 void eat_comment(void) {
@@ -60,6 +63,7 @@ void eat_comment(void) {
 			output_string(LITSTR("*/"));
 #endif
 			break;
+		} else if(consume_universal_stuff() {
 		} else {
 			onechar();
 		}
@@ -69,11 +73,7 @@ void eat_comment(void) {
 
 void eat_space(void) {
 	for(;;) {
-		if(consume("CLOSURE")) {
-			/* XXX: why put this here? where to put it? */
-#ifdef OUTPUT
-			output_closure_name(true);
-#endif
+		if(consume_universal_stuff()) {
 		} else if(consume("/*")) {
 #ifdef OUTPUT			
 			output_string(LITSTR("/*"));

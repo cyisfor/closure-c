@@ -56,6 +56,9 @@ void script_info_load(int fd) {
 	
 #include "parser-snippet.h"
 
+	bool consume_universal_stuff(void) {
+		return false;
+	}
 	bool consume_statement(string* line) {
 		size_t start = pos;
 		if(seek(";")) {

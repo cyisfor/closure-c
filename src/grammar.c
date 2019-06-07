@@ -29,12 +29,7 @@ void parse(string buf) {
 	if(err == 0) {
 		while(pos < buf.len) {
 			eat_space();
-			if(consume("RETURNS")) {
-				output_return_type();
-			} else if(consume("CLOSURE")) {
-				output_closure_name(false);
-			} else if(consume("PREAMBLE;")) {
-				output_preamble();
+			if(consume_universal_stuff()) {
 			} else if(consume_for_types()) {
 			} else {
 				onechar();
@@ -46,6 +41,23 @@ void parse(string buf) {
 		fprintf(stderr, "Uhh %d\n", err);
 		abort();
 	}
+
+	bool consume_universal_stuff(void) {
+		if(consume("RETURNS")) {
+			output_return_type();
+		} else if(consume("SAFE_CLOSURE")) {
+			output_closure_name(true);
+		} else if(consume("CLOSURE")) {
+			output_closure_name(false);
+		} else if(consume("PREAMBLE")) {
+			output_preamble();
+			consume(";"); // maybe
+		} else {
+			return false;
+		}
+		return true;
+	}
+	
 	bool consume_for_types(void) {
 		eat_space();
 		if(pos == buf.len) return false;
