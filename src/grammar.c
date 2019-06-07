@@ -103,9 +103,6 @@ void parse(string buf) {
 			expression,
 			&delim,
 			(struct var){});
-		if(add_head) {
-			output_string(delim);
-		}
 		void do_one(bool aux) {
 			size_t i, n;
 			const struct var* types = for_types(aux, &n);
@@ -114,6 +111,9 @@ void parse(string buf) {
 					output_string(delim);
 				} else {
 					gotsome = true;
+					if(add_head) {
+						output_string(delim);
+					}
 				}
 				parse_for_types_expression(
 					expression,
