@@ -1,7 +1,8 @@
 
 #define P(arg) (p->arg)
 static
-void fail(struct parser* p, enum failure_state state, const char* fmt, ...) {
+void failf(struct parser* p, const char* file, int line, enum failure_state state, const char* fmt, ...) {
+	fprintf(stderr, "%s:%d\n",file,line);
 	fprintf(stderr, "buffer: ==============\n%.*s\n============\n",
 			(int)(P(buf.len) - P(pos)), P(buf.base) + P(pos));
 	va_list args;
@@ -12,6 +13,9 @@ void fail(struct parser* p, enum failure_state state, const char* fmt, ...) {
 	exit(state); // XXX: eh
 	longjmp(P(onerr), state);
 }
+#define fail(p, state, fmt, ...) \
+	failf((struct parser*)p, __FILE__, __LINE__, state, fmt, ## __VA_ARGS__)
+
 static
 bool consumef(struct parser* p, string s) {
 	size_t left = P(buf.len) - P(pos);
@@ -38,12 +42,14 @@ bool seekf(struct parser* p, string s) {
 #define seek(p, lit) seekf((struct parser*)p, LITSTR(lit))
 
 static
-void onechar(struct parser* p) {
+void onecharf(struct parser* p) {
 #ifdef OUTPUT
 	if(P(output)) fputc(P(buf.base)[P(pos)],stdout);
 #endif
 	if(++P(pos) == P(buf.len)) longjmp(P(onerr), P(noexit) ? 23 : 1);
 }
+
+#define onechar(p) onecharf((struct parser*)p)
 
 // XXX: uh oh...
 // this is for stuff that gets parsed everywhere, even in comments and "whitespace"
@@ -51,7 +57,8 @@ static
 bool consume_universal_stuff(struct parser* p);
 
 static
-void eat_space(struct parser* p);
+void eat_spacef(struct parser* p);
+#define eat_space(p) eat_spacef((struct parser*)p)
 
 static
 void eat_comment(struct parser* p) {
@@ -72,7 +79,7 @@ void eat_comment(struct parser* p) {
 }
 
 static
-void eat_space(struct parser* p) {
+void eat_spacef(struct parser* p) {
 	for(;;) {
 		if(consume_universal_stuff(p)) {
 		} else if(consume(p, "/*")) {

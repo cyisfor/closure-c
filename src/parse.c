@@ -28,7 +28,7 @@ static
 bool consume_for_types(struct parser* p);
 
 static
-bool consume_universal_stuff(struct main_parser* p) {
+bool consume_universal_stuff(struct parser* p) {
 	if(consume(p, "RETURNS")) {
 		output_return_type();
 	} else if(consume(p, "SAFE_CLOSURE")) {
@@ -60,8 +60,8 @@ bool consume_for_types(struct main_parser* p) {
 			// END_FOR_TYPES followed by stuff that could be useless
 			// XXX: this is a total hack
 			string derp = {delim.base,1};
-			consumef(p, delim) ||
-				consumef(p, derp) ||
+			consumef((struct parser*)p, delim) ||
+				consumef((struct parser*)p, derp) ||
 				consume(p, ";") ||
 				consume(p, ",") ||
 				consume(p, "."); // ?

@@ -3,20 +3,14 @@
 #include "mystring.h"
 #include "output.h"
 
-#include <setjmp.h>
-#include <stdarg.h>
-#include <ctype.h> //
-
-
 enum failure_state {
 	SUCCESS
 };
+#include "parser-interface.h"
 
-struct parser {
-	string buf;
-	size_t pos;
-	jmp_buf onerr;
-	bool noexit;
+struct ftparser {
+	struct parser;
+	
 	bool ready_for_delim;
 	string delim;
 	enum section section;
@@ -24,14 +18,14 @@ struct parser {
 	size_t prevpos;
 };
 
-#include "parser-snippet.h"
+#include "parser-impl.h"
 
 static
 bool consume_universal_stuff(struct parser* p) {
 	return false;
 }
 
-static string find_delim(struct parser* p, string expression) {
+static string find_delim(struct ftparser* p, string expression) {
 	/* minimum expression "type name" */
 	if(expression.len < 9) {
 		fail(p, TINY_EXPRESSION, "Useless tiny expression cannot exist");
@@ -54,7 +48,7 @@ static string find_delim(struct parser* p, string expression) {
 }
 
 static
-void do_one(struct parser* p, string delim, string expression, bool aux) {
+void do_one(struct ftparser* p, string delim, string expression, bool aux) {
 	size_t i, n;
 	const struct var* types = for_types(aux, &n);
 	for(i=0;i<n;++i) {
@@ -70,7 +64,7 @@ void do_one(struct parser* p, string delim, string expression, bool aux) {
 }
 
 static
-void prepare_for_section(struct parser* p, enum section which) {
+void prepare_for_section(struct ftparser* p, enum section which) {
 	eat_space(p);
 	if(P(previous_section) != NO_SECTION) {
 		string expression = {
@@ -97,11 +91,11 @@ void prepare_for_section(struct parser* p, enum section which) {
 }
 
 bool parse_for_types(string expression, string* outdelim) {
-	struct parser pp = {
+	struct ftparser pp = {
 		.buf = expression,
 		.noexit = true,
 	};
-	struct parser* p = &pp;
+	struct ftparser* p = &pp;
 	bool add_tail = false;
 	for(;;) {
 		eat_space(p);
