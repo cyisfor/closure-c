@@ -55,14 +55,14 @@ bool consume_universal_stuff(struct parser* p) {
 static
 bool consume_statement(struct parser* p, string* line) {
 	size_t start = P(pos);
-	if(seek(";")) {
-		line->base = P(P(buf.base)) + start;
+	if(seek(p, ";")) {
+		line->base = P(buf.base) + start;
 		line->len = P(pos) - start;
 		++P(pos); // consume(";");
 	} else {
-		line->base = P(P(buf.base)) + start;
-		line->len = buf.len - start;
-		P(pos) = buf.len;
+		line->base = P(buf.base) + start;
+		line->len = P(buf.len) - start;
+		P(pos) = P(buf.len);
 	}
 	return true;
 }
@@ -77,7 +77,7 @@ bool consume_statement(struct parser* p, string* line) {
 	   end_name = 4
 	*/
 static
-bool consume_var(struct parser* p) {
+bool consume_var(struct parser* p, bool aux) {
 	string line;
 	size_t oldpos = P(pos);
 	consume_statement(p, &line);
@@ -104,7 +104,7 @@ bool consume_var(struct parser* p) {
 	size_t end_type = start_name ;
 	for(;;) {
 		if(--end_type == start_type) {
-			fail(NO_SPACES_FOUND,
+			fail(p, NO_SPACES_FOUND,
 				 "no space in argument definition");
 		}
 		if(!isspace(line.base[end_type-1])) break;
@@ -144,7 +144,7 @@ bool consume_include(struct parser* p) {
 	if(consume(p, "#include ")) {
 		eat_space(p);
 		size_t start2 = P(pos);
-		if(seek("\n")) {
+		if(seek(p, "\n")) {
 			straddn(&preamble, LITLEN("#include "));
 			straddn(&preamble,
 					P(buf.base) + start2,
@@ -193,14 +193,14 @@ void script_info_load(int fd) {
 			--preamble.len;
 		}
 		if(false == consume_statement(&closure_name)) {
-			fail(NO_NAME, "no closure name specified");
+			fail(p, NO_NAME, "no closure name specified");
 		}
 		// can't ever free lazy though... or can you? vvvvv
 		eat_space();
 		if(true == consume("RETURNS:")) {
 			eat_space();
 			if(false == consume_statement(&return_type)) {
-				fail(NO_RETURN, "RETURNS: without return type");
+				fail(p, NO_RETURN, "RETURNS: without return type");
 			}
 		} else {
 			return_type = LITSTR("void");
@@ -210,12 +210,12 @@ void script_info_load(int fd) {
 			eat_space();
 			if(consume("AUX:")) {
 				aux = true;
-			} else if(consume_var()) {
+			} else if(consume_var(p, aux)) {
 				// ok
-			} else if(buf.len == P(pos)) {
+			} else if(P(buf.len) == P(pos)) {
 				break;
 			} else {
-				fail(EXTRANEOUS, "extraneous characters");
+				fail(p, EXTRANEOUS, "extraneous characters");
 			}
 		}
 	} else if(err == 1) {
@@ -223,7 +223,7 @@ void script_info_load(int fd) {
 	} else {
 		fprintf(stderr, "uhhh %d\n", err);
 		fprintf(stderr, "what '%.*s'\n",
-				(int)(buf.len - P(pos)), P(P(buf.base))+P(pos));
+				(int)(P(buf.len) - P(pos)), P(buf.base)+P(pos));
 		abort();
 	}
 }
