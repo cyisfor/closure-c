@@ -41,15 +41,20 @@ function (closure_for name)
 	set(A_INFO "src/${name}_info.h")
   endif()
   parse_for(${name} ${A_INFO})
+  get_filename_component(
+	header
+	"${name}.h"
+	ABSOLUTE
+	BASE_DIR "${CMAKE_CURRENT_BINARY_DIR}")
   add_custom_command(
-	OUTPUT ${name}.h
+	OUTPUT "${header}"
 	COMMAND
 	parse_${name} > ${name}.h
 	MAIN_DEPENDENCY
 	"${A_INFO}"
 	DEPENDS
 	parse_${name})
-  closure_setup_targets("${name}.h" "${A_TARGETS}")
+  closure_setup_targets("${header}" "${A_TARGETS}")
 endfunction(closure_for)
 
 parse_for(script src/script_info.h)
@@ -63,15 +68,20 @@ function (closure_script name)
   endif()
   get_filename_component(A_SCRIPT "${A_SCRIPT}" ABSOLUTE BASE_DIR
 	"${CMAKE_CURRENT_SOURCE_DIR}")
+  get_filename_component(
+	header
+	"${name}.h"
+	ABSOLUTE
+	BASE_DIR "${CMAKE_CURRENT_BINARY_DIR}")  
   add_custom_command(
-	OUTPUT "${name}.h"
+	OUTPUT "${header}"
 	COMMAND
 	parse_script < "${A_SCRIPT}" > "${name}.h"
 	MAIN_DEPENDENCY
 	"${A_SCRIPT}"
 	DEPENDS
 	parse_script)
-  closure_setup_targets("${name}.h" "${A_TARGETS}")
+  closure_setup_targets("${header}" "${A_TARGETS}")
 endfunction()
 
 if("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
