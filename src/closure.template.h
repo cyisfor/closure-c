@@ -9,10 +9,7 @@ PREAMBLE;
 #include <assert.h>
 
 typedef RETURNS (*CONCATSYM(CLOSURE,_callback))(
-	FOR_TYPES AUX
-	type name,
-	END_FOR_TYPES,
-	FOR_TYPES
+	FOR_TYPES ALL
 	type name,
 	END_FOR_TYPES);
 
@@ -23,10 +20,7 @@ everything between last `name` and END_FOR_TYPES
 
 struct CLOSURE {
 	CONCATSYM(CLOSURE,_callback) call;
-	FOR_TYPES AUX
-	type name;
-	END_FOR_TYPES;
-	FOR_TYPES
+	FOR_TYPES ALL
 	type name;
 	END_FOR_TYPES;
 };

@@ -65,11 +65,15 @@ void parse(string buf) {
 		canexit = -1;
 		output = false;
 		eat_space();
-		bool do_init = false;
+		enum { NOT_AUX, AUX, ALL } do_aux = NOT_AUX;
 		size_t start = pos;
 		for(;;) {
 			if(consume("AUX")) {
-				do_init = true;
+				do_aux = AUX;
+				eat_space();
+				start = pos;
+			} else if(consume("ALL")) {
+				do_aux = ALL;
 				eat_space();
 				start = pos;
 			} else if(consume("END_FOR_TYPES")) {
@@ -82,25 +86,42 @@ void parse(string buf) {
 			.base = buf.base + start,
 			.len = pos - LITSIZ("END_FOR_TYPES") - start
 		};
-		size_t i, n;
-		const struct var* types = for_types(do_init, &n);
-		if(n == 0) {
-			// END_FOR_TYPES followed by stuff that could be useless
-			consume(";");
-			consume(",");
-			consume(".");
-			eat_space();
-		} else {
+		bool gotsome = false;
+		void do_one(bool aux) {
+			size_t i, n;
+			const struct var* types = for_types(aux, &n);
 			string delim = {};
 			for(i=0;i<n;++i) {
-				if(i != 0) {
+				if(gotsome) {
 					output_string(delim);
+				} else {
+					gotsome = true;
 				}
 				parse_for_types_expression(
 					expression,
 					i == 0 ? &delim : NULL,
 					types[i]);
 			}
+		}
+		switch(in_aux) {
+		case NO_AUX:
+			do_one(false);
+			break;
+		case AUX:
+			do_one(true);
+			break;
+		case ALL:
+			do_one(true);
+			do_one(false);
+			break;
+		};
+		if(!gotsome) {
+			// END_FOR_TYPES followed by stuff that could be useless
+			// XXX: this is a total hack
+			consume(";");
+			consume(",");
+			consume("."); // ?
+			eat_space();
 		}
 		output = true;
 		canexit = 1;
