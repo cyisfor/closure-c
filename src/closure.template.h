@@ -3,10 +3,12 @@
 
 PREAMBLE;
 
+#include "concatsym.h"
+
 #include <stddef.h> // NULL
 #include <assert.h>
 
-typedef RETURNS (*CLOSURE_callback)(
+typedef RETURNS (*CONCATSYM(CLOSURE,_callback))(
 	FOR_TYPES AUX
 	type name,
 	END_FOR_TYPES,
@@ -20,7 +22,7 @@ everything between last `name` and END_FOR_TYPES
  */
 
 struct CLOSURE {
-	CLOSURE_callback call;
+	CONCATSYM(CLOSURE,_callback) call;
 	FOR_TYPES AUX
 	type name;
 	END_FOR_TYPES;
@@ -31,7 +33,7 @@ struct CLOSURE {
 
 static
 struct CLOSURE CLOSURE(
-	CLOSURE_callback call,
+	CONCATSYM(CLOSURE,_callback) call,
 	struct CLOSURE closure) {
 	assert(call);
 	assert(closure.call == NULL); // ehhhh
@@ -40,7 +42,7 @@ struct CLOSURE CLOSURE(
 }
 
 static
-RETURNS CLOSURE_call(
+RETURNS CONCATSYM(CLOSURE,_call)(
 	const struct CLOSURE self,
 	FOR_TYPES
 	type name,
