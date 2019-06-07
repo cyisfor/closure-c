@@ -65,15 +65,15 @@ void parse(string buf) {
 		canexit = -1;
 		output = false;
 		eat_space();
-		enum { NOT_AUX, AUX, ALL } do_aux = NOT_AUX;
+		enum { NO_AUX, AUX, ALL } in_aux = NO_AUX;
 		size_t start = pos;
 		for(;;) {
 			if(consume("AUX")) {
-				do_aux = AUX;
+				in_aux = AUX;
 				eat_space();
 				start = pos;
 			} else if(consume("ALL")) {
-				do_aux = ALL;
+				in_aux = ALL;
 				eat_space();
 				start = pos;
 			} else if(consume("END_FOR_TYPES")) {
@@ -87,10 +87,10 @@ void parse(string buf) {
 			.len = pos - LITSIZ("END_FOR_TYPES") - start
 		};
 		bool gotsome = false;
+		string delim = {};
 		void do_one(bool aux) {
 			size_t i, n;
 			const struct var* types = for_types(aux, &n);
-			string delim = {};
 			for(i=0;i<n;++i) {
 				if(gotsome) {
 					output_string(delim);
