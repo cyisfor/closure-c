@@ -25,9 +25,7 @@ struct parser {
 #ifdef OUTPUT
 	bool output = true;
 #endif
-};
-
-	
+};	
 
 #include "parser-snippet.h"
 

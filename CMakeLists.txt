@@ -7,14 +7,20 @@ data_to_header(TEMPLATE
   HEADER template.h
   SOURCE src/closure.template.h)
 
+add_library(libparse
+  	cstuff/src/mmapfile.c
+	src/parse.c)
+add_dependencies(libparse TEMPLATE)
+target_include_directories(libparse PUBLIC
+	"${CMAKE_CURRENT_BINARY_DIR}"
+	cstuff/src)
+
 function (parse_for name info)
   add_executable(parse_${name}
-	cstuff/src/mmapfile.c
-	src/main.c
-	src/grammar.c
 	src/output.c
+	src/main.c
 	src/for_types.c)
-  add_dependencies(parse_${name} TEMPLATE)
+  target_link_libraries(parse_${name} PRIVATE libparse)
   get_filename_component(info "${info}" ABSOLUTE BASE_DIR
 	"${CMAKE_CURRENT_SOURCE_DIR}")
   target_compile_definitions(parse_${name} PRIVATE
@@ -22,6 +28,7 @@ function (parse_for name info)
   target_include_directories(parse_${name} PRIVATE
 	"${CMAKE_CURRENT_BINARY_DIR}"
 	cstuff/src)
+
 endfunction(parse_for)
 
 function(closure_setup_targets header targets)
