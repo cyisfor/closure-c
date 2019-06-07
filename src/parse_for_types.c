@@ -62,7 +62,7 @@ void do_one(struct parser* p, string delim, string expression, bool aux) {
 		} else {
 			P(ready_for_delim) = true;
 		}
-		parse_expression(
+		parse_for_expression(
 			expression,
 			NULL,
 			types[i]);
@@ -131,48 +131,3 @@ bool parse_for_types(string expression, string* outdelim) {
 	return true;
 }
 
-static
-void derp(string buf, string* delim, const struct var v) {
-	struct parser pp = {
-		.output = false,
-		.buf = buf
-	};
-	struct parser* p = &pp;
-	size_t last_thing = 0;
-	void commit(int except_for) {
-		if(delim == NULL && P(pos) - except_for > last_thing) {
-			output_string((string){
-							  P(buf.base) + last_thing,
-							  P(pos) - except_for - last_thing
-								  });
-		}
-		last_thing = P(pos);
-	}
-	int err = setjmp(pp.onerr);
-	if(err == 0) {
-		for(;;) {
-			// longjmp...
-			if(consume(p, "type")) {
-				commit(4);
-				if(delim == NULL)
-					output_string(v.type);
-			} else if(consume(p, "name")) {
-				commit(4);
-				if(delim == NULL)
-					output_string(v.name);
-			} else {
-				onechar(p);
-			}
-		}
-	} else if(err == 1) {
-		// ok
-	} else {
-		fprintf(stderr, "expression %d\n", err);
-		abort();
-	}
-	// don't commit the last last thing, save for delim
-	if(delim) {
-		delim->base = P(buf.base) + last_thing;
-		delim->len = P(buf.len) - last_thing;
-	}
-}
