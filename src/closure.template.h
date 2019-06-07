@@ -20,9 +20,9 @@ everything between last `name` and END_FOR_TYPES
 
 struct CLOSURE {
 	CONCATSYM(CLOSURE,_callback) call;
-	FOR_TYPES ALL TAIL
+	FOR_TYPES ALL
 	type name;
-	END_FOR_TYPES;
+	END_FOR_TYPES
 };
 
 static
@@ -37,14 +37,13 @@ struct CLOSURE CLOSURE(
 
 static
 RETURNS CONCATSYM(CLOSURE,_call)(
-	const struct CLOSURE selfFOR_TYPES HEAD
+	const struct CLOSURE selfFOR_TYPES HEAD VAR
 	type name,
 	END_FOR_TYPES) {
 	return self.call(
-		FOR_TYPES AUX TAIL
+		FOR_TYPES AUX
 		self.name,
-		END_FOR_TYPES
-		FOR_TYPES
+		VAR
 		name,
 		END_FOR_TYPES);
 }

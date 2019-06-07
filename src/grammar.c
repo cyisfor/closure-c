@@ -65,44 +65,15 @@ void parse(string buf) {
 		canexit = -1;
 		output = false;
 		eat_space();
-		enum { NO_AUX, AUX, ALL } in_aux = NO_AUX;
+		enum section { NONE, VAR, AUX, ALL };
+		enum section section = VAR, previous_section = NONE;
 		size_t start = pos;
 		bool add_tail = false;
 		bool add_head = false;
-		for(;;) {
-			eat_space();
-			if(consume("AUX")) {
-				in_aux = AUX;
-				eat_space();
-				start = pos;
-			} else if(consume("ALL")) {
-				in_aux = ALL;
-				eat_space();
-				start = pos;
-			} else if(consume("TAIL")) {
-				add_tail = true;
-				eat_space();
-				start = pos;
-			} else if(consume("HEAD")) {
-				add_head = true;
-				eat_space();
-				start = pos;				
-			} else if(consume("END_FOR_TYPES")) {
-				break;
-			} else {
-				if(++pos == buf.len) fail(PAST_END, "EOF without END_FOR_TYPES");
-			}
-		}
-		string expression = {
-			.base = buf.base + start,
-			.len = pos - LITSIZ("END_FOR_TYPES") - start
-		};
+		string expression = {};
 		bool gotsome = false;
 		string delim = {};
-		parse_for_types_expression(
-			expression,
-			&delim,
-			(struct var){});
+
 		void do_one(bool aux) {
 			size_t i, n;
 			const struct var* types = for_types(aux, &n);
@@ -121,19 +92,55 @@ void parse(string buf) {
 					types[i]);
 			}
 		}
-		switch(in_aux) {
-		case NO_AUX:
-			do_one(false);
-			break;
-		case AUX:
-			do_one(true);
-			break;
-		case ALL:
-			do_one(true);
-			do_one(false);
-			break;
-		};
-		
+
+		void prepare_for_section(enum section which) {
+			section = which;
+			eat_space();
+			start = pos;
+			if(previous_section != NONE) {				
+				parse_for_types_expression(
+					expression,
+					&delim,
+					(struct var){});		
+				switch(previous_section) {
+				case VAR:
+					do_one(false);
+					break;
+				case AUX:
+					do_one(true);
+					break;
+				case ALL:
+					do_one(true);
+					do_one(false);
+					break;
+				};
+			}
+		}
+		for(;;) {
+			eat_space();
+			if(consume("VAR")) {
+				prepare_for_section(VAR);
+			} else if(consume("AUX")) {
+				prepare_for_section(AUX);
+			} else if(consume("ALL")) {
+				prepare_for_section(ALL);
+			} else if(consume("TAIL")) {
+				assert(previous_section == NO_SECTION);
+				add_tail = true;
+				eat_space();
+				start = pos;
+			} else if(consume("HEAD")) {
+				assert(previous_section == NO_SECTION);
+				add_head = true;
+				eat_space();
+				start = pos;				
+			} else if(consume("END_FOR_TYPES")) {
+				prepare_for_section(NO_SECTION);
+				break;
+			} else {
+				if(++pos == buf.len) fail(PAST_END, "EOF without END_FOR_TYPES");
+			}
+		}		
 		if(gotsome) {
 			if(add_tail) {
 				output_string(delim);
