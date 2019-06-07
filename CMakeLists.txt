@@ -8,6 +8,7 @@ data_to_header(TEMPLATE
   SOURCE src/closure.template.h)
 
 add_library(libparse
+  src/showbuf.c # debugging
   	cstuff/src/mmapfile.c
 	src/parse_for_types.c
 	src/parse_for_expression.c
@@ -20,6 +21,7 @@ target_include_directories(libparse PUBLIC
 
 function (parse_for name info)
   add_executable(parse_${name}
+	src/showbuf.c # debugging
 	src/output.c
 	src/main.c
 	src/for_types.c)
