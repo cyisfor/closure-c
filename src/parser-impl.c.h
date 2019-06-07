@@ -44,12 +44,13 @@ bool seekf(struct parser* p, string s) {
 #define seek(p, lit) seekf((struct parser*)p, LITSTR(lit))
 
 static
-void onecharf(struct parser* p) {
+bool onecharf(struct parser* p) {
+	if(P(pos) == P(buf.len)) return false;
 #ifdef OUTPUT
 	if(P(output)) fputc(P(buf.base)[P(pos)],stdout);
 #endif
-	if(P(pos) == P(buf.len)) longjmp(P(onerr), P(noexit) ? 23 : 1);
 	++P(pos);
+	return true;
 }
 
 #define onechar(p) onecharf((struct parser*)p)
@@ -76,8 +77,8 @@ void eat_comment(struct parser* p) {
 #endif
 			break;
 		} else if(consume_universal_stuff(p)) {
-		} else {
-			onechar(p);
+		} else if(!onechar(p)) {
+			break;
 		}
 	}
 }
@@ -100,7 +101,7 @@ void eat_spacef(struct parser* p) {
 			}
 #endif
 			for(;;) {
-				onechar(p);
+				if(!onechar(p)) break;
 				if(P(buf.base)[P(pos)] == '\n') {
 					onechar(p);
 					break;

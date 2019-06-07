@@ -79,8 +79,8 @@ void parse(string buf) {
 			eat_space(p);
 			if(consume_universal_stuff(p)) {
 			} else if(consume_for_types(p)) {
-			} else {
-				onechar(p);
+			} else if(!onechar(p)) {
+				break;
 			}
 		}
 	} else if(err == 1) {
