@@ -1,4 +1,4 @@
-#define P(arg) (p->(arg))
+#define P(arg) (p->arg)
 
 void fail(struct parser* p, enum failure_state state, const char* fmt, ...) {
 	fprintf(stderr, "buffer: ==============\n%.*s\n============\n",
@@ -41,13 +41,13 @@ void onechar(struct parser* p) {
 #ifdef OUTPUT
 	if(P(output)) fputc(P(buf.base)[P(pos)],stdout);
 #endif
-	if(++P(pos) == P(buf.len)) longjmp(P(onerr), P(canexit));
+	if(++P(pos) == P(buf.len)) longjmp(P(onerr), P(noexit) ? 23 : 1);
 }
 
 // XXX: uh oh...
 static bool consume_universal_stuff(struct parser* p);
 
-static void eat_space(void);
+static void eat_space(struct parser* p);
 
 void eat_comment(struct parser* p) {
 	for(;;) {

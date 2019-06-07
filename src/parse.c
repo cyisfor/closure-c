@@ -21,9 +21,9 @@ struct parser {
 	string buf;
 	size_t pos;
 	jmp_buf onerr;
-	int canexit = 1;
+	bool noexit;
 #ifdef OUTPUT
-	bool output = true;
+	bool output;
 #endif
 };	
 
@@ -106,9 +106,9 @@ bool consume_for_types(struct parser* p) {
 	eat_space(p);
 	if(P(pos) == P(buf.len)) return false;
 	if(!consume(p, "FOR_TYPES")) return false;
-	canexit = -1;
-	output = false;
-	eat_space();
+	P(noexit) = true;
+	P(output) = false;
+	eat_space(p);
 	enum section section = VAR, previous_section = NO_SECTION;
 	size_t start = P(pos);
 	bool add_tail = false;
@@ -153,8 +153,8 @@ bool consume_for_types(struct parser* p) {
 		consume(p, ",") ||
 		consume(p, "."); // ?
 	eat_space();
-	output = true;
-	canexit = 1;
+	p->output = true;
+	p->noexit = false;
 	return true;
 }
 
