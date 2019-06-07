@@ -116,6 +116,9 @@ void parse_for_types_expression(string buf, string* delim, const struct var v) {
 
 #define OUTPUT	
 #include "parser-snippet.h"
+	bool consume_universal_stuff(void) {
+		return false;
+	}
 	output = false;
 	size_t last_thing = 0;
 	void commit(int except_for) {

@@ -51,7 +51,7 @@ void onechar(void) {
 }
 
 // XXX: why does this have to go here?
-auto void consume_universal_stuff(void);
+auto bool consume_universal_stuff(void);
 
 auto void eat_space(void);
 
@@ -63,7 +63,7 @@ void eat_comment(void) {
 			output_string(LITSTR("*/"));
 #endif
 			break;
-		} else if(consume_universal_stuff() {
+		} else if(consume_universal_stuff()) {
 		} else {
 			onechar();
 		}
