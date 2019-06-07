@@ -18,7 +18,6 @@ struct ftparser {
 	
 	bool ready_for_delim;
 	string delim;
-	enum section section;
 	enum section previous_section;
 	size_t prevpos;
 };
@@ -46,9 +45,10 @@ static string find_delim(struct ftparser* p, string expression) {
 				.len = expression.len - start - 4
 			};
 		}
-		if(--start < 4) {
+		if(start == 0) {
 			fail(p, TINY_EXPRESSION, "Useless expression has no type or name.");
 		}
+		--start;
 	}
 }
 
@@ -77,6 +77,7 @@ void prepare_for_section(struct ftparser* p, enum section which) {
 			.len = P(pos) - P(prevpos)
 		};
 		string delim = find_delim(p, expression);
+		expression.len -= delim.len;
 		switch(P(previous_section)) {
 		case VAR:
 			do_one(p, delim, expression, false);
@@ -89,10 +90,10 @@ void prepare_for_section(struct ftparser* p, enum section which) {
 			do_one(p, delim, expression, false);
 			break;
 		};
+		p->delim = delim;
 	}
-	P(previous_section) = P(section);
+	P(previous_section) = which;
 	P(prevpos) = P(pos);
-	P(section) = which;
 }
 
 bool parse_for_types(string expression, string* outdelim) {

@@ -37,6 +37,9 @@ void parse_for_expression(string buf, const struct var v) {
 				commit(4);
 				output_string(v.name);
 			} else {
+				if(p->pos < p->buf.len) {
+					output_char(p->buf.base[p->pos]);
+				}
 				onechar(p);
 			}
 		}

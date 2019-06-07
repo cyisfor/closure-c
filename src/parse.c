@@ -36,15 +36,16 @@ bool consume_universal_stuff(struct parser* p) {
 
 
 bool consume_for_types(struct parser* p) {
-	eat_space(p);
 	if(P(pos) == P(buf.len)) return false;
 	if(!consume(p, "FOR_TYPES")) return false;
+	eat_space(p);
 	size_t start = P(pos);
 	if(seek(p, "END_FOR_TYPES")) {
 		string expression = {
 			.base = p->buf.base + start,
 			.len = P(pos) - start 
 		};
+		P(pos) += LITSIZ("END_FOR_TYPES");
 		string delim = {};
 		if(parse_for_types(expression, &delim)) {
 			// END_FOR_TYPES followed by stuff that could be useless
