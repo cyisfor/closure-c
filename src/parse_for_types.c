@@ -2,9 +2,12 @@
 #include "parse_for_expression.h"
 #include "mystring.h"
 #include "output.h"
+#include <assert.h>
+
 
 enum failure_state {
-	SUCCESS
+	SUCCESS,
+	TINY_EXPRESSION
 };
 #include "parser-interface.h"
 
@@ -36,10 +39,10 @@ static string find_delim(struct ftparser* p, string expression) {
 	for(;;) {
 		bool gotit = false;
 		
-		if((0 == memcmp(expression.buf + start, LITLEN("type"))) ||
-		   (0 == memcmp(expression.buf + start, LITLEN("name")))) {
+		if((0 == memcmp(expression.base + start, LITLEN("type"))) ||
+		   (0 == memcmp(expression.base + start, LITLEN("name")))) {
 			return (string) {
-				.buf = expression.buf + start + 4,
+				.base = expression.base + start + 4,
 				.len = expression.len - start - 4
 			};
 		}
@@ -108,10 +111,10 @@ bool parse_for_types(string expression, string* outdelim) {
 		} else if(consume(p, "ALL")) {
 			prepare_for_section(p, ALL);
 		} else if(consume(p, "TAIL")) {
-			assert(previous_section == NO_SECTION);
+			assert(P(previous_section) == NO_SECTION);
 			add_tail = true;
 		} else if(consume(p, "HEAD")) {
-			assert(previous_section == NO_SECTION);
+			assert(P(previous_section) == NO_SECTION);
 			P(ready_for_delim) = true;
 		} else {
 			if(++P(pos) == P(buf.len)) {

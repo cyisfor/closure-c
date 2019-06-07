@@ -1,4 +1,7 @@
 #include "parse_for_expression.h"
+#include "output.h"
+
+enum failure_state { SUCCESS };
 
 #include "parser-interface.h"
 #include "parser-impl.c.h"
@@ -10,7 +13,6 @@ bool consume_universal_stuff(struct parser* p) {
 
 void parse_for_expression(string buf, const struct var v) {
 	struct parser pp = {
-		.output = false,
 		.buf = buf
 	};
 	struct parser* p = &pp;
