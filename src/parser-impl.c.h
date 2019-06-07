@@ -48,7 +48,8 @@ void onecharf(struct parser* p) {
 #ifdef OUTPUT
 	if(P(output)) fputc(P(buf.base)[P(pos)],stdout);
 #endif
-	if(++P(pos) == P(buf.len)) longjmp(P(onerr), P(noexit) ? 23 : 1);
+	if(P(pos) == P(buf.len)) longjmp(P(onerr), P(noexit) ? 23 : 1);
+	++P(pos);
 }
 
 #define onechar(p) onecharf((struct parser*)p)
@@ -66,6 +67,7 @@ static
 void eat_comment(struct parser* p) {
 	for(;;) {
 		eat_space(p);
+		if(p->pos == p->buf.len) return;
 		if(consume(p, "*/")) {
 #ifdef OUTPUT
 			if(P(output)) {

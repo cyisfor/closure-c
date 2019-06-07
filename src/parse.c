@@ -43,7 +43,7 @@ bool consume_for_types(struct parser* p) {
 	if(seek(p, "END_FOR_TYPES")) {
 		string expression = {
 			.base = p->buf.base + start,
-			.len = P(pos) - start - LITSIZ("END_FOR_TYPES")
+			.len = P(pos) - start 
 		};
 		string delim = {};
 		if(parse_for_types(expression, &delim)) {

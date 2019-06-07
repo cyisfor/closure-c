@@ -31,8 +31,8 @@ bool consume_universal_stuff(struct parser* p) {
 }
 
 static string find_delim(struct ftparser* p, string expression) {
-	/* minimum expression "type name" */
-	if(expression.len < 9) {
+	/* minimum expression "name" */
+	if(expression.len < 4) {
 		fail(p, TINY_EXPRESSION, "Useless tiny expression cannot exist");
 	}
 	size_t start = expression.len - 4;
@@ -46,7 +46,7 @@ static string find_delim(struct ftparser* p, string expression) {
 				.len = expression.len - start - 4
 			};
 		}
-		if(start < 9) {
+		if(--start < 4) {
 			fail(p, TINY_EXPRESSION, "Useless expression has no type or name.");
 		}
 	}
@@ -102,6 +102,8 @@ bool parse_for_types(string expression, string* outdelim) {
 	};
 	int res = setjmp(pp.onerr);
 	switch(res) {
+	case 0:
+		break;
 	case 1:
 		return false;
 	default:
@@ -124,13 +126,14 @@ bool parse_for_types(string expression, string* outdelim) {
 			assert(P(previous_section) == NO_SECTION);
 			P(ready_for_delim) = true;
 		} else {
-			if(++P(pos) == P(buf.len)) {
+			if(P(pos) == P(buf.len)) {
 				prepare_for_section(p, NO_SECTION);
 				if(P(ready_for_delim) && add_tail) {
 					output_string(p->delim);
 				}
 				break;
 			}
+			++P(pos);
 		}
 	}
 	*outdelim = pp.delim;
