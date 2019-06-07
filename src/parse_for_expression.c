@@ -42,7 +42,7 @@ void parse_for_expression(string buf, const struct var v) {
 				if(p->pos == p->buf.len) {
 					break;
 				} else {
-					output_char(p->buf.base[p->pos]);
+					// output during commit
 					assert(onechar(p));
 				}
 			}

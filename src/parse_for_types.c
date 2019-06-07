@@ -92,6 +92,7 @@ void prepare_for_section(struct ftparser* p, size_t goback, enum section which) 
 		p->delim = delim;
 	}
 	P(previous_section) = which;
+	eat_space(p);
 	P(prevpos) = P(pos);
 }
 

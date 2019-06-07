@@ -33,5 +33,5 @@ void bufaround(string s, size_t pos, size_t margin) {
 
 
 void showstr(const char* s, size_t from, size_t to) {
-	printf("BUF: =====\n%.*s\n====\n", (int)(to - from), s + from);
+	printf("\nBUF: =====\n%.*s\n====\n", (int)(to - from), s + from);
 }

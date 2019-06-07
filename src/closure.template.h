@@ -42,7 +42,7 @@ RETURNS CONCATSYM(CLOSURE,_call)(
 	END_FOR_TYPES) {
 	return self.call(
 		FOR_TYPES AUX
-		self.name,
+|		self.name,
 		VAR
 		name,
 		END_FOR_TYPES);
