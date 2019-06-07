@@ -31,6 +31,7 @@ struct parser {
 	bool add_head;
 	enum section section;
 	enum section previous_section;
+	size_t prevpos;
 };	
 
 #include "parser-snippet.h"
@@ -55,110 +56,35 @@ bool consume_universal_stuff(struct parser* p) {
 	return true;
 }
 
-static
-void do_one(struct parser* p, string delim, string expression, bool aux) {
-	size_t i, n;
-	const struct var* types = for_types(aux, &n);
-	for(i=0;i<n;++i) {
-		if(P(gotsome)) {
-			output_string(delim);
-		} else {
-			P(gotsome) = true;
-			if(P(add_head)) {
-				output_string(delim);
-			}
-		}
-		parse_for_types_expression(
-			expression,
-			NULL,
-			types[i]);
-	}
-}
 
-static
-void prepare_for_section(struct parser* p, enum section which) {
-	eat_space(p);
-	size_t start = P(pos);
-	if(P(previous_section) != NO_SECTION) {
-		string expression = {
-			.base  = P(buf.base) + start,
-			.len = P(pos) - start
-		};
-		string delim = {};
-		parse_for_types_expression(
-			expression,
-			&delim,
-			(struct var){});		
-		switch(P(previous_section)) {
-		case VAR:
-			do_one(p, delim, expression, false);
-			break;
-		case AUX:
-			do_one(p, delim, expression, true);
-			break;
-		case ALL:
-			do_one(p, delim, expression, true);
-			do_one(p, delim, expression, false);
-			break;
-		};
-	}
-	P(previous_section) = P(section);
-	P(section) = which;
-}
-
-static
 bool consume_for_types(struct parser* p) {
 	eat_space(p);
 	if(P(pos) == P(buf.len)) return false;
 	if(!consume(p, "FOR_TYPES")) return false;
-	P(noexit) = true;
-	P(output) = false;
-	eat_space(p);
-	enum section section = VAR, previous_section = NO_SECTION;
-	bool add_tail = false;
-	P(add_head) = false;
-	P(gotsome) = false;
-	string delim = {};
-
-	for(;;) {
-		eat_space(p);
-		if(consume(p, "VAR")) {
-			prepare_for_section(p, VAR);
-		} else if(consume(p, "AUX")) {
-			prepare_for_section(p, AUX);
-		} else if(consume(p, "ALL")) {
-			prepare_for_section(p, ALL);
-		} else if(consume(p, "TAIL")) {
-			assert(previous_section == NO_SECTION);
-			add_tail = true;
-		} else if(consume(p, "HEAD")) {
-			assert(previous_section == NO_SECTION);
-			P(add_head) = true;
-		} else if(consume(p, "END_FOR_TYPES")) {
-			prepare_for_section(p, NO_SECTION);
-			break;
-		} else {
-			if(++P(pos) == P(buf.len)) fail(p, PAST_END, "EOF without END_FOR_TYPES");
-		}
-	}		
-	if(P(gotsome)) {
-		if(add_tail) {
-			output_string(delim);
-		}
+	size_t start = P(pos);
+	if(consume(p, "END_FOR_TYPES")) {
+		string expression = {
+			.base = p->buf.base + start,
+			.len = P(pos) - start - LITSIZ("END_FOR_TYPES")
+		};
+		string delim = {};
+		if(parse_for_types(expression, &delim)) {
+			// END_FOR_TYPES followed by stuff that could be useless
+			// XXX: this is a total hack
+			string derp = {delim.base,1};
+			consumef(p, delim) ||
+				consumef(p, derp) ||
+				consume(p, ";") ||
+				consume(p, ",") ||
+				consume(p, "."); // ?
+			eat_space(p);
+			return true;
+		} 
+		P(pos) = start;
 	}
-	// END_FOR_TYPES followed by stuff that could be useless
-	// XXX: this is a total hack
-	string derp = {delim.base,1};
-	consumef(p, delim) ||
-		consumef(p, derp) ||
-		consume(p, ";") ||
-		consume(p, ",") ||
-		consume(p, "."); // ?
-	eat_space(p);
-	p->output = true;
-	p->noexit = false;
-	return true;
+	return false;
 }
+
 
 void parse(string buf) {
 	struct parser pp = {
