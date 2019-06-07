@@ -11,3 +11,15 @@ struct parser {
 	bool output;
 #endif
 };
+
+// debugging
+#include "showbuf.h"
+static
+void showP(struct parser* p) {
+	buftail(p->buf, p->pos);
+	if(p->noexit) { fputs("NOEXIT ",stdout); }
+#ifdef OUTPUT
+	if(p->output) { fputs("OUTPUT ",stdout); }
+#endif
+	putchar('\n');
+}

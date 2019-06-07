@@ -2,6 +2,7 @@
 #include <ctype.h> // isspace
 
 #define P(arg) (p->arg)
+
 static
 void failf(struct parser* p, const char* file, int line, enum failure_state state, const char* fmt, ...) {
 	fprintf(stderr, "%s:%d\n",file,line);
