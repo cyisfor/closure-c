@@ -22,7 +22,7 @@ void bufaround(string s, size_t pos, size_t margin) {
 		to = pos + margin - from;
 		from = 0;
 	}
-	printf("\n.*s\n", to - from, s.base + from);
+	showstr(s.base, from, to);
 	size_t i;
 	for(i=0;i<from;++i) {
 		putchar(' ');
@@ -33,5 +33,23 @@ void bufaround(string s, size_t pos, size_t margin) {
 
 
 void showstr(const char* s, size_t from, size_t to) {
-	printf("\nBUF: =====\n%.*s\n====\n", (int)(to - from), s + from);
+	char* ss = malloc(to-from);
+	size_t i;
+	fputs("\nBUF: =====\n", stdout);
+	for(i=0;i<to;++i) {
+		switch(s[from+i]) {
+		case ' ':
+			putchar(0xb9);
+			break;
+		case '\t':
+			putchar(0xb2);
+			break;
+		case '\n':
+			putchar(0xb3);
+			break;
+		default:
+			putchar(s[from+i]);
+		};
+	}
+	fputs("\n=====\n", stdout);
 }
