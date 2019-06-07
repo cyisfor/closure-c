@@ -99,6 +99,13 @@ void parse(string buf) {
 		};
 		bool gotsome = false;
 		string delim = {};
+		parse_for_types_expression(
+			expression,
+			&delim,
+			(struct var){});
+		if(add_head) {
+			output_string(delim);
+		}
 		void do_one(bool aux) {
 			size_t i, n;
 			const struct var* types = for_types(aux, &n);
@@ -107,13 +114,10 @@ void parse(string buf) {
 					output_string(delim);
 				} else {
 					gotsome = true;
-					if(add_head)
-						output_string(delim);
-					
 				}
 				parse_for_types_expression(
 					expression,
-					i == 0 ? &delim : NULL,
+					NULL,
 					types[i]);
 			}
 		}
@@ -164,7 +168,7 @@ void parse_for_types_expression(string buf, string* delim, const struct var v) {
 	output = false;
 	size_t last_thing = 0;
 	void commit(int except_for) {
-		if(pos - except_for > last_thing) {
+		if(delim == NULL && pos - except_for > last_thing) {
 			output_string((string){
 							  buf.base + last_thing,
 							  pos - except_for - last_thing
@@ -178,10 +182,12 @@ void parse_for_types_expression(string buf, string* delim, const struct var v) {
 			// longjmp...
 			if(consume("type")) {
 				commit(4);
-				output_string(v.type);
+				if(delim == NULL)
+					output_string(v.type);
 			} else if(consume("name")) {
 				commit(4);
-				output_string(v.name);
+				if(delim == NULL)
+					output_string(v.name);
 			} else {
 				onechar();
 			}
