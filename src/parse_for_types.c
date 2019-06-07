@@ -100,6 +100,13 @@ bool parse_for_types(string expression, string* outdelim) {
 		.buf = expression,
 		.noexit = true,
 	};
+	int res = setjmp(pp.onerr);
+	switch(res) {
+	case 1:
+		return false;
+	default:
+		exit(res);
+	};
 	struct ftparser* p = &pp;
 	bool add_tail = false;
 	for(;;) {

@@ -14,10 +14,10 @@ void output_char(char c) {
 	fputc(c, stdout);
 }
 void output_space(string s) {
-	fwrite(s.base, s.len, 1, stdout);
+	output_string(s);
 }
 void output_return_type() {
-	fwrite(STRANDLEN(return_type), 1, stdout);
+	output_string(return_type);
 }
 void output_closure_name(bool safe) {
 	string s = {};
@@ -46,7 +46,7 @@ void output_closure_name(bool safe) {
 	} else {
 		s = closure_name;
 	}
-	fwrite(STRANDLEN(s), 1, stdout);
+	output_string(s);
 }
 
 void output_string(string s) {

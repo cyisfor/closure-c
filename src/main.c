@@ -5,6 +5,7 @@
 
 int main(int argc, char *argv[])
 {
+	setvbuf(stdout, NULL, _IONBF, 0);
 #ifdef SCRIPT_INFO
 	script_info_load(0);
 #endif
