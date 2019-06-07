@@ -22,7 +22,7 @@ bool consumef(struct parser* p, string s) {
 	}
 	return false;
 }
-#define consume(p, lit) consumef(p, LITSTR(lit))
+#define consume(p, lit) consumef((struct parser*)p, LITSTR(lit))
 static
 bool seekf(struct parser* p, string s) {
 	size_t off = 0;
@@ -35,7 +35,7 @@ bool seekf(struct parser* p, string s) {
 	}
 	return false;
 }
-#define seek(p, lit) seekf(p, LITSTR(lit))
+#define seek(p, lit) seekf((struct parser*)p, LITSTR(lit))
 
 static
 void onechar(struct parser* p) {
@@ -46,6 +46,7 @@ void onechar(struct parser* p) {
 }
 
 // XXX: uh oh...
+// this is for stuff that gets parsed everywhere, even in comments and "whitespace"
 static
 bool consume_universal_stuff(struct parser* p);
 

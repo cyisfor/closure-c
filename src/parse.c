@@ -4,29 +4,17 @@
 #include "output.h"
 #include "for_types.h"
 
-#include <ctype.h>
-#include <setjmp.h>
-#include <assert.h> //
-#include <stdarg.h> // va_*
-#include <signal.h> // raise
-
 enum failure_state {
 	SUCCESS,
 	PAST_END
 };
-
 #define OUTPUT
 
+#include "parser-interface.h"
 enum section { NO_SECTION, VAR, AUX, ALL };
 
-struct parser {
-	string buf;
-	size_t pos;
-	jmp_buf onerr;
-	bool noexit;
-#ifdef OUTPUT
-	bool output;
-#endif
+struct main_parser {
+	struct parser;
 	bool gotsome;
 	bool add_head;
 	enum section section;
@@ -34,13 +22,13 @@ struct parser {
 	size_t prevpos;
 };	
 
-#include "parser-snippet.h"
+#include "parser-impl.c.h"
 
 static
 bool consume_for_types(struct parser* p);
 
 static
-bool consume_universal_stuff(struct parser* p) {
+bool consume_universal_stuff(struct main_parser* p) {
 	if(consume(p, "RETURNS")) {
 		output_return_type();
 	} else if(consume(p, "SAFE_CLOSURE")) {
@@ -57,7 +45,7 @@ bool consume_universal_stuff(struct parser* p) {
 }
 
 
-bool consume_for_types(struct parser* p) {
+bool consume_for_types(struct main_parser* p) {
 	eat_space(p);
 	if(P(pos) == P(buf.len)) return false;
 	if(!consume(p, "FOR_TYPES")) return false;
@@ -85,12 +73,11 @@ bool consume_for_types(struct parser* p) {
 	return false;
 }
 
-
 void parse(string buf) {
-	struct parser pp = {
+	struct main_parser pp = {
 		.buf = buf
 	};
-	struct parser* p = &pp;
+	struct main_parser* p = &pp;
 
 	////////////////// main:
 

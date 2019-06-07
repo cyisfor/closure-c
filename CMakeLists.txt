@@ -12,6 +12,7 @@ add_library(libparse
 	src/parse_for_types.c
 	src/parse_for_expression.c
 	src/parse.c)
+target_compile_options(libparse PUBLIC -fplan9-extensions)
 add_dependencies(libparse TEMPLATE)
 target_include_directories(libparse PUBLIC
 	"${CMAKE_CURRENT_BINARY_DIR}"
