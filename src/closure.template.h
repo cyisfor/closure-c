@@ -1,5 +1,4 @@
-#ifndef SAFE_CLOSURE_INTERFACE_H
-#define SAFE_CLOSURE_INTERFACE_H
+#pragma once
 
 PREAMBLE;
 
@@ -47,5 +46,3 @@ RETURNS CONCATSYM(CLOSURE,_call)(
 		name,
 		END_FOR_TYPES);
 }
-
-#endif /* SAFE_CLOSURE_INTERFACE_H */
