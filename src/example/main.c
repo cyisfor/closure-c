@@ -3,7 +3,7 @@ struct thing {
 	int foo;
 };
 
-#include "example_closure.h"
+#include "example.h"
 
 #include <glib.h> 
 

@@ -1,33 +1,29 @@
-#pragma once
-PREAMBLE;
-#include "concatsym.h"
+#ifndef N
+#error call this in a namespace thingy
+#endif
 
 #include <stddef.h> // NULL
 #include <assert.h>
-
-#define CALLBACK CONCATSYM(NAME,_callback)
 
 /*
   Be careful these types are simple, anything refcounted or otherwise screwed up by
   naive struct copy should be pointers!
 */
-struct NAME {
-	FOR_TYPES TAIL ALL
-	type name;
-	END_FOR_TYPES
-};
+typedef struct N(args) {
+#define X(type, name) type name;
+	FOR_ARGS
+} N(args);
 
-typedef void (*CALLBACK)(struct NAME);
+typedef void (*N(callback))(struct N(args));
 
-struct CONCATSYM(NAME,_closure) {
-	struct NAME;
-	CALLBACK call;
-};
+typedef struct N(closure) {
+	struct N(args);
+	N(callback) call;
+} N(closure);
 
 static
-void CONCATSYM(NAME,_call)(struct CONCATSYM(NAME,_closure) self) {
-	return self.call(self.NAME);
+void N(call_closure)(N(closure) self) {
+	return self.call(self.N(args));
 }
 
-/* wow, this would work with just cpp! I'm such a fool. */
-#undef CALLBACK
+#undef FOR_ARGS
