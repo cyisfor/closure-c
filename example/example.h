@@ -7,6 +7,12 @@ struct N(thing) {
 	int foo;
 };
 
-#define CLOSURE_ARGS X(struct N(thing), foo) X(double,bar) X(void*,baz) X(string,message) X(int*, answer)
+struct N(args) {
+	struct N(thing) foo;
+	double bar;
+	void* baz;
+	string message;
+	int* answer;
+};
 #include "../closure.h"
 #include "../end_namespace.h"
