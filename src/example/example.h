@@ -7,6 +7,6 @@ struct N(thing) {
 	int foo;
 };
 
-#define FOR_TYPES X(struct N(thing), foo) X(double,bar) X(void*,baz) X(string,message) X(int*, updater)
+#define CLOSURE_ARGS X(struct N(thing), foo) X(double,bar) X(void*,baz) X(string,message) X(int*, answer)
 #include "../closure.h"
 #include "../end_namespace.h"

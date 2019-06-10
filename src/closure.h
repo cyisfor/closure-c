@@ -1,6 +1,9 @@
 #ifndef N
 #error call this in a namespace thingy
 #endif
+#ifndef CLOSURE_ARGS
+#error your closure should have some arguments! like X(type,name) X(type2,name2)
+#endif
 
 #include <stddef.h> // NULL
 #include <assert.h>
@@ -11,19 +14,19 @@
 */
 typedef struct N(args) {
 #define X(type, name) type name;
-	FOR_ARGS
+	CLOSURE_ARGS
 #undef X		
 } N(args);
 
 typedef void (*N(callback))(struct N(args));
 
 typedef struct N(closure) {
-	struct N(args);
+	N(args);
 	N(callback) call;
 } N(closure);
 
 static
-void N(call_closure)(N(closure) self) {
+void N(call)(N(closure) self) {
 	return self.call(self.N(args));
 }
 

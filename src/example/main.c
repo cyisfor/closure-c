@@ -7,8 +7,7 @@ void my_callback(example_args args) {
 	printf("bar: %f\n", args.bar);
 	printf("baz: %p\n", args.baz);
 	printf("message: %.*s\n", (int)args.message.len, args.message.base);
-	*args.updater += 19;
-	return thing;
+	*args.answer = (*args.answer + 715) / 18;
 }
 
 int main(int argc, char *argv[])
@@ -17,17 +16,21 @@ int main(int argc, char *argv[])
 	struct example_closure c = {
 		.call = my_callback,
 		.foo = {
-			.foo = 42
+			.foo = 82
 		},
 		.bar = 2.7818281828459045,
 		.baz = (void*)0x23,
 		.message = LITSTR("this is a test"),
-		.updater = &somenum
+		.answer = &somenum
 	};
 
 	// do stuff...
 
 	example_call(c);
+	printf("answer? %d\n", somenum);
+	c.baz = (void*)(long int)somenum;
+	example_call(c);
 	printf("answer %d\n", somenum);
+
     return 0;
 }

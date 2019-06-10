@@ -103,7 +103,8 @@ if("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
 	src/example/main.c)
   target_link_libraries(example PkgConfig::GLIB)
   target_include_directories(example PRIVATE cstuff/src)
-
+  target_compile_options(example PUBLIC -fplan9-extensions)
+				  
   add_executable(example2
 	src/example2.c)
   closure_script(example2
