@@ -18,16 +18,18 @@ typedef struct N(args) {
 #undef X		
 } N(args);
 
-typedef void (*N(callback))(struct N(args));
+struct N(closure);
 
+typedef void (*N(callback))(struct N(closure)*);
+/* args are separate so we can override the signature of call with a new struct */
 typedef struct N(closure) {
-	N(args);
 	N(callback) call;
+	N(args);
 } N(closure);
 
 static
-void N(call)(N(closure) self) {
-	return self.call(self.N(args));
+void N(call)(N(closure)* self) {
+	return self->call(&self);
 }
 
 #undef FOR_ARGS
