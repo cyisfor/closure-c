@@ -7,12 +7,12 @@ void my_callback(example_closure* args) {
 	printf("bar: %f\n", args->bar);
 	printf("baz: %p\n", args->baz);
 	printf("message: %.*s\n", (int)args->message.len, args->message.base);
-	*args->answer = (*args->answer + 715) / 18;
+	*args->answer = (*args->answer + 419) / 11;
 }
 
 int main(int argc, char *argv[])
 {
-	int somenum = 23;
+	int somenum = 9 * 6;
 	struct example_closure c = {
 		.call = my_callback,
 		.foo = {
