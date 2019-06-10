@@ -2,12 +2,12 @@
 
 #include <glib.h>
 
-void my_callback(example_args args) {
-	printf("foo: %d\n", args.foo.foo);
-	printf("bar: %f\n", args.bar);
-	printf("baz: %p\n", args.baz);
-	printf("message: %.*s\n", (int)args.message.len, args.message.base);
-	*args.answer = (*args.answer + 715) / 18;
+void my_callback(example_closure* args) {
+	printf("foo: %d\n", args->foo.foo);
+	printf("bar: %f\n", args->bar);
+	printf("baz: %p\n", args->baz);
+	printf("message: %.*s\n", (int)args->message.len, args->message.base);
+	*args->answer = (*args->answer + 715) / 18;
 }
 
 int main(int argc, char *argv[])
@@ -26,10 +26,10 @@ int main(int argc, char *argv[])
 
 	// do stuff...
 
-	example_call(c);
+	example_call(&c);
 	printf("\nanswer? %d\n\n", somenum);
 	c.baz = (void*)(long int)somenum;
-	example_call(c);
+	example_call(&c);
 	printf("\nanswer %d\n", somenum);
 
     return 0;

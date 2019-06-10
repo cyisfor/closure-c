@@ -29,7 +29,7 @@ typedef struct N(closure) {
 
 static
 void N(call)(N(closure)* self) {
-	return self->call(&self);
+	return self->call(self);
 }
 
 #undef FOR_ARGS
