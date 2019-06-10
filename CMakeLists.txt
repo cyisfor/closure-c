@@ -102,11 +102,8 @@ if("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
   add_executable(example
 	src/example/main.c)
   target_link_libraries(example PkgConfig::GLIB)
+  target_include_directories(example PRIVATE cstuff/src)
 
-  closure_for(example_closure
-	TARGETS example
-	INFO src/example/closure_info.h)
-  
   add_executable(example2
 	src/example2.c)
   closure_script(example2
