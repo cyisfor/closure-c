@@ -12,6 +12,7 @@
 typedef struct N(args) {
 #define X(type, name) type name;
 	FOR_ARGS
+#undef X		
 } N(args);
 
 typedef void (*N(callback))(struct N(args));

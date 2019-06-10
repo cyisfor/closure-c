@@ -1,6 +1,12 @@
+#include "mystring.h"
+
 #define NAMESPACE example
 #include "../namespace.h"
 
-#define FOR_TYPES X(struct thing1, foo) X(double,bar) X(void*,baz)
+struct N(thing) {
+	int foo;
+};
+
+#define FOR_TYPES X(struct N(thing), foo) X(double,bar) X(void*,baz) X(string,message) X(int*, updater)
 #include "../closure.h"
 #include "../end_namespace.h"
