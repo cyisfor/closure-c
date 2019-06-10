@@ -1,7 +1,0 @@
-#include "mystring.h"
-example(derp);
-RETURNS: struct thing;
-char foo; string bar;
-AUX:
-struct thing oof;
-void* arglebargle
