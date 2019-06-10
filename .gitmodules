@@ -1,6 +1,3 @@
 [submodule "cstuff"]
 	path = cstuff
 	url = git://github.com/cyisfor/cstuff.git
-[submodule "data_to_header"]
-	path = data_to_header
-	url = git://github.com/cyisfor/data_to_header_string.git

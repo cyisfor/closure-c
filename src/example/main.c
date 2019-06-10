@@ -27,10 +27,10 @@ int main(int argc, char *argv[])
 	// do stuff...
 
 	example_call(c);
-	printf("answer? %d\n", somenum);
+	printf("\nanswer? %d\n\n", somenum);
 	c.baz = (void*)(long int)somenum;
 	example_call(c);
-	printf("answer %d\n", somenum);
+	printf("\nanswer %d\n", somenum);
 
     return 0;
 }
