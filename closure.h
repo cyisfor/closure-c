@@ -16,7 +16,6 @@ struct N(closure);
 typedef
 #ifdef RETURNS
 RETURNS
-#undef RETURNS
 #else
 void
 #endif
@@ -30,12 +29,15 @@ typedef struct N(closure) {
 static
 #ifdef RETURNS
 RETURNS
-#undef RETURNS
 #else
 void
 #endif
 N(call)(N(closure)* self) {
 	return self->call(self);
 }
+
+#ifdef RETURNS
+#undef RETURNS
+#endif
 
 #undef FOR_ARGS
