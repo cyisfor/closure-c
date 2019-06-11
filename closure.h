@@ -13,7 +13,14 @@ typedef struct N(args) N(args);
 
 struct N(closure);
 
-typedef void (*N(callback))(struct N(closure)*);
+typedef
+#ifdef RETURNS
+RETURNS
+#undef RETURNS
+#else
+void
+#endif
+(*N(callback))(struct N(closure)*);
 /* args are separate so we can override the signature of call with a new struct */
 typedef struct N(closure) {
 	N(callback) call;
@@ -21,7 +28,13 @@ typedef struct N(closure) {
 } N(closure);
 
 static
-void N(call)(N(closure)* self) {
+#ifdef RETURNS
+RETURNS
+#undef RETURNS
+#else
+void
+#endif
+N(call)(N(closure)* self) {
 	return self->call(self);
 }
 
