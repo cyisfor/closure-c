@@ -2,6 +2,8 @@
 #error call this in a namespace thingy
 #endif
 
+#include "ensure.h"
+
 #include <stddef.h> // NULL
 #include <assert.h>
 
@@ -19,7 +21,11 @@ RETURNS
 #else
 void
 #endif
-(*N(callback))(struct N(closure)*);
+(*N(callback))(struct N(closure)
+#ifndef CALLBYVAL
+			   *
+#endif
+	);
 /* args are separate so we can override the signature of call with a new struct */
 typedef struct N(closure) {
 	N(callback) call;
@@ -33,11 +39,19 @@ RETURNS
 void
 #endif
 N(call)(N(closure)* self) {
-	return self->call(self);
+	ensure_ne(NULL, self);
+	return self->call(
+		#ifdef CALLBYVAL
+*
+		#endif
+		self);
 }
 
 #ifdef RETURNS
 #undef RETURNS
 #endif
 
+#ifdef CALLBYVAL
+#undef CALLBYVAL
+#endif
 #undef FOR_ARGS
